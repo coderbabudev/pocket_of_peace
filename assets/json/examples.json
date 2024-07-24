@@ -1,0 +1,205 @@
+[
+  {
+    "type": "CardGroup",
+    "id": 1,
+    "skill_category": "body",
+    "sub_skill_category": "feet",
+    "card_list": [
+      {
+        "type": "MultipleChoiceCard",
+        "id": 101,
+        "title": "Flex your toes",
+        "hint": null,
+        "image": "101.png",
+        "video": null,
+        "subtitle": "Where do you feel some tension when you do that?",
+        "index": 1,
+        "selection_max": null,
+        "has_images": false,
+        "options": [
+          {
+            "type": "MultipleChoiceOption",
+            "text": "heels",
+            "image": null
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": "arches",
+            "image": null
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": "ankles",
+            "image": null
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": "calves",
+            "image": null
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": "knees",
+            "image": null
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": "thighs",
+            "image": null
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": "none",
+            "image": null
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": "other",
+            "image": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "CardGroup",
+    "id": 15,
+    "skill_category": "body",
+    "sub_skill_category": "head",
+    "card_list": [
+      {
+        "type": "TextCard",
+        "id": 1501,
+        "title": "Drop your head down and let it fall forward",
+        "hint": null,
+        "image": "1501.png",
+        "video": null,
+        "subtitle": "What's something you notice in your neck?",
+        "index": 1,
+        "num_textfields": 1,
+        "is_expandable": true,
+        "placeholder_texts": [
+          "ex: tension in left side"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "CardGroup",
+    "id": 47,
+    "skill_category": "surrounding",
+    "sub_skill_category": "texture",
+    "card_list": [
+      {
+        "type": "TextCard",
+        "id": 4701,
+        "title": "Find 3 things that have a smooth surface.",
+        "hint": null,
+        "image": "4701.png",
+        "video": null,
+        "subtitle": "What are they?",
+        "index": 1,
+        "num_textfields": 3,
+        "is_expandable": false,
+        "placeholder_texts": [
+          "ex: item 1", "ex: item 2", "ex: item 3"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "CardGroup",
+    "id": 64,
+    "skill_category": "surrounding",
+    "sub_skill_category": "smell",
+    "card_list": [
+      {
+        "type": "YesNoCard",
+        "id": 6401,
+        "title": "We often don't smell things.",
+        "hint": "Unless it's perfume or to check if it's gone bad.",
+        "image": "6401.png",
+        "video": null,
+        "subtitle": "Can you pick out any scents in the air?",
+        "index": 1
+      },
+      {
+        "type": "TextCard",
+        "id": 6402,
+        "title": "Pick an object nearby",
+        "hint": null,
+        "image": "6402.png",
+        "video": null,
+        "subtitle": "What does it smell like?",
+        "index": 2,
+        "num_textfields": 1,
+        "is_expandable": false,
+        "placeholder_texts": [
+          "type here"
+        ]
+      },
+      {
+        "type": "StatementCard",
+        "id": 6403,
+        "title": null,
+        "hint": null,
+        "image": null,
+        "video": null,
+        "subtitle": "While our noses aren't as sensitive as those of animals, it's an entire dimension of experience that we often aren't aware of!",
+        "index": 3
+      }
+    ]
+  },
+  {
+    "type": "CardGroup",
+    "id": 24,
+    "skill_category": "body",
+    "sub_skill_category": "face",
+    "card_list": [
+      {
+        "type": "MultipleChoiceCard",
+        "id": 2401,
+        "title": "Which expression is your face in currently?",
+        "hint": null,
+        "image": null,
+        "video": null,
+        "subtitle": null,
+        "index": 1,
+        "selection_max": 1,
+        "has_images": true,
+        "options": [
+          {
+            "type": "MultipleChoiceOption",
+            "text": null,
+            "image": "101.png"
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": null,
+            "image": "101.png"
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": null,
+            "image": "101.png"
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": null,
+            "image": "101.png"
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": null,
+            "image": "101.png"
+          },
+          {
+            "type": "MultipleChoiceOption",
+            "text": "Other",
+            "image": "101.png"
+          }
+        ]
+      }
+    ]
+  }
+]
