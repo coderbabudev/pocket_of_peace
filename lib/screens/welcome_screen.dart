@@ -44,6 +44,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               GestureDetector(
                 onTap: () {
                   cardValue.loadJsonData().then((value) {
+                    cardValue.isClose.value = false;
                     Get.to(() => const ShowCardScreen());
                   });
                 },
@@ -75,20 +76,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ],
                 ),
               ),
-              Slider.adaptive(
-                min: 0,
-                divisions: 10,
-                max: 10,
-                value: cardValue.currentMinValue,
-                activeColor: AppColors.lightBlue,
-                inactiveColor: AppColors.offWhite.withOpacity(0.18),
-                thumbColor: AppColors.lightBlue,
-                onChanged: (value) {
-                  setState(() {
-                    cardValue.currentMinValue = value;
-                  });
-                },
-              ).paddingOnly(top: 60, left: 17, right: 17),
+              SliderTheme(
+                data: SliderThemeData(
+                  tickMarkShape: SliderTickMarkShape.noTickMark, //
+                ),
+                child: Slider.adaptive(
+                  min: 0,
+                  divisions: 10,
+                  max: 10,
+                  value: cardValue.currentMinValue.value,
+                  activeColor: AppColors.lightBlue,
+                  inactiveColor: AppColors.offWhite.withOpacity(0.18),
+                  thumbColor: AppColors.lightBlue,
+                  onChanged: (value) {
+                    setState(() {
+                      cardValue.currentMinValue.value = value;
+                    });
+                  },
+                ).paddingOnly(top: 60, left: 17, right: 17),
+              ),
               Text(
                 "${cardValue.currentMinValue.toInt()} min",
                 style: TextStyle(

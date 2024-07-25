@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/screens/welcome_screen.dart';
+import 'package:pocket_of_peace/utils/string_utils.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  Assets();
   runApp(const MyApp());
 }
 
