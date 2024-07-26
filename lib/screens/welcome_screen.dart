@@ -28,85 +28,111 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             fit: BoxFit.fill,
           ),
         ),
-        child: GetBuilder<CardGroupController>(builder: (cardValue) {
-          cardValue = controller;
-          return Column(
-            children: [
-              Text(
-                AppStrings.appName,
-                style: TextStyle(
-                  color: AppColors.steelBlue,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20,
-                  letterSpacing: 0.3,
-                ),
+        child: Column(
+          children: [
+            Text(
+              AppStrings.appName,
+              style: TextStyle(
+                color: AppColors.steelBlue,
+                fontWeight: FontWeight.w600,
+                fontSize: 20,
+                letterSpacing: 0.3,
               ),
-              GestureDetector(
-                onTap: () {
-                  cardValue.loadJsonData().then((value) {
-                    cardValue.isClose.value = false;
-                    Get.to(() => const ShowCardScreen());
+            ),
+            GestureDetector(
+              onTap: () {
+                if (controller.currentMinValue.value != 0.0) {
+                  controller.loadJsonData().then((value) {
+                    Get.to(
+                      () => ShowCardScreen(
+                        minuteValue: controller.currentMinValue.value,
+                      ),
+                    );
                   });
-                },
-                child: Stack(
-                  fit: StackFit.loose,
-                  alignment: Alignment.center,
-                  children: [
-                    Image.asset(
-                      Assets.welcomeRoundBg,
-                      height: 242,
-                      width: 242,
-                      filterQuality: FilterQuality.high,
-                    ).paddingOnly(top: 105),
-                    Positioned.fill(
-                      top: 100,
-                      left: -15,
-                      child: Center(
+                } else {
+                  Get.showSnackbar(
+                    GetSnackBar(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 20),
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: AppColors.steelBlue,
+                      duration: const Duration(seconds: 2),
+                      borderRadius: 16,
+                      messageText: Center(
                         child: Text(
-                          AppStrings.start,
+                          AppStrings.timerErrorText,
                           style: TextStyle(
+                            fontSize: 16,
                             fontWeight: FontWeight.w500,
-                            fontSize: 60,
-                            color: AppColors.lightBlue,
-                            letterSpacing: 0.3,
+                            color: AppColors.primaryColor,
                           ),
                         ),
                       ),
-                    )
-                  ],
-                ),
+                      dismissDirection: DismissDirection.startToEnd,
+                    ),
+                  );
+                }
+              },
+              child: Stack(
+                fit: StackFit.loose,
+                alignment: Alignment.center,
+                children: [
+                  Image.asset(
+                    Assets.welcomeRoundBg,
+                    height: 242,
+                    width: 242,
+                    filterQuality: FilterQuality.high,
+                  ).paddingOnly(top: 105),
+                  Positioned.fill(
+                    top: 100,
+                    left: -15,
+                    child: Center(
+                      child: Text(
+                        AppStrings.start,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 60,
+                          color: AppColors.lightBlue,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
-              SliderTheme(
-                data: SliderThemeData(
-                  tickMarkShape: SliderTickMarkShape.noTickMark, //
-                ),
-                child: Slider.adaptive(
-                  min: 0,
-                  divisions: 10,
-                  max: 10,
-                  value: cardValue.currentMinValue.value,
-                  activeColor: AppColors.lightBlue,
-                  inactiveColor: AppColors.offWhite.withOpacity(0.18),
-                  thumbColor: AppColors.lightBlue,
-                  onChanged: (value) {
-                    setState(() {
-                      cardValue.currentMinValue.value = value;
-                    });
-                  },
-                ).paddingOnly(top: 60, left: 17, right: 17),
-              ),
-              Text(
-                "${cardValue.currentMinValue.toInt()} min",
+            ),
+            Obx(() => SliderTheme(
+                  data: SliderThemeData(
+                    tickMarkShape: SliderTickMarkShape.noTickMark, //
+                  ),
+                  child: Slider.adaptive(
+                    min: 0.0,
+                    divisions: 10,
+                    max: 10.0,
+                    value: controller.currentMinValue.value,
+                    activeColor: AppColors.lightBlue,
+                    inactiveColor: AppColors.offWhite.withOpacity(0.18),
+                    thumbColor: AppColors.lightBlue,
+                    onChanged: (value) {
+                      setState(() {
+                        controller.currentMinValue.value = value;
+                      });
+                    },
+                  ).paddingOnly(top: 60, left: 17, right: 17),
+                )),
+            Obx(
+              () => Text(
+                "${controller.currentMinValue.toInt()} min",
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 24,
                   color: AppColors.lightBlue,
                   letterSpacing: 0.3,
                 ),
-              )
-            ],
-          ).paddingSymmetric(vertical: 20);
-        }),
+              ),
+            )
+          ],
+        ).paddingSymmetric(vertical: 20),
       ),
     );
   }

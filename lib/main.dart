@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/screens/welcome_screen.dart';
-import 'package:pocket_of_peace/utils/string_utils.dart';
+import 'package:pocket_of_peace/services/shared_prefrences_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-  Assets();
+  await PreferenceUtils.init();
   runApp(const MyApp());
 }
 

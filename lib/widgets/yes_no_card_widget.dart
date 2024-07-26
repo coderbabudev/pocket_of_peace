@@ -12,39 +12,36 @@ class YesOrNoCardWidget extends StatefulWidget {
     this.subTitle,
     this.image,
     this.video,
-    this.valueColor,
-    this.progressValue = 0,
   });
 
   final String? title;
   final String? subTitle;
   final String? image;
   final String? video;
-  final double progressValue;
-  final Animation<Color?>? valueColor;
 
   @override
   State<YesOrNoCardWidget> createState() => _YesOrNoCardWidgetState();
 }
 
 class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
-  bool yesSelect = false;
-  bool noSelect = false;
   late VideoPlayerController _controller;
   CardGroupController controller = Get.put(CardGroupController());
 
   @override
   void initState() {
     super.initState();
-    if (widget.video != null) {
-      _controller =
-          VideoPlayerController.asset('${Assets.videoPath}${widget.video!}')
-            ..initialize().then((_) {
-              setState(() {});
-              _controller.setLooping(true);
-              _controller.play();
-            });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (widget.video != null) {
+        _controller =
+            VideoPlayerController.asset('assets/videos/${widget.video!}')
+              ..initialize().then((_) {
+                setState(() {});
+                _controller.setLooping(true);
+                _controller.play();
+              });
+      }
+      controller.loadSelectedValue();
+    });
   }
 
   @override
@@ -70,39 +67,37 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
           Center(
             child: widget.image != null
                 ? Image.asset(
-                    '${Assets.assetsPath}${widget.image!}',
+                    'assets/icons/${widget.image!}',
                     height: 85,
                     width: 76,
                     filterQuality: FilterQuality.high,
                   ).paddingOnly(top: 29)
-                : widget.video != null
-                    ? _controller.value.isInitialized
-                        ? SizedBox(
-                            height: 210,
-                            width: 303,
-                            child: Stack(
-                              fit: StackFit.loose,
-                              alignment: Alignment.bottomRight,
-                              children: [
-                                GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        controller.isClick.value =
-                                            !controller.isClick.value;
-                                      });
-                                    },
-                                    child: VideoPlayer(_controller)),
-                                if (controller.isClick.value)
-                                  const Icon(
-                                    Icons.fullscreen,
-                                    size: 35,
-                                    color: Color(0xFF000000),
-                                  ).paddingOnly(bottom: 5, right: 5)
-                              ],
-                            ),
-                          ).paddingOnly(top: 29)
-                        : Container()
-                    : const SizedBox(),
+                : _controller.value.isInitialized
+                    ? SizedBox(
+                        height: 210,
+                        width: 303,
+                        child: Stack(
+                          fit: StackFit.loose,
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    controller.isClick.value =
+                                        !controller.isClick.value;
+                                  });
+                                },
+                                child: VideoPlayer(_controller)),
+                            if (controller.isClick.value)
+                              const Icon(
+                                Icons.fullscreen,
+                                size: 35,
+                                color: Color(0xFF000000),
+                              ).paddingOnly(bottom: 5, right: 5)
+                          ],
+                        ),
+                      ).paddingOnly(top: 29)
+                    : Container(),
           ),
           Text(
             widget.subTitle ?? '',
@@ -118,10 +113,11 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      yesSelect = true;
-                      noSelect = false;
+                      controller.yesSelect.value = true;
+                      controller.noSelect.value = false;
+                      controller.saveSelectedValue();
                       controller.pageController.nextPage(
-                        duration: const Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 700),
                         curve: Curves.easeIn,
                       );
                     });
@@ -133,7 +129,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                         borderRadius: BorderRadius.circular(5),
                         color: const Color(0xFFCED7D9).withOpacity(0.37),
                         border: Border.all(
-                          color: yesSelect == true
+                          color: controller.yesSelect.value
                               ? const Color(0xFF000000)
                               : Colors.transparent,
                           width: 1,
@@ -148,7 +144,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                           height: 22,
                           width: 22,
                           decoration: BoxDecoration(
-                            color: yesSelect == true
+                            color: controller.yesSelect.value
                                 ? const Color(0xFF5C5C5C)
                                 : const Color(0xFFF5F9F9),
                             borderRadius: BorderRadius.circular(3),
@@ -160,11 +156,11 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                           ),
                           child: Center(
                             child: Text(
-                              "Y",
+                              AppStrings.y,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
-                                color: yesSelect == true
+                                color: controller.yesSelect.value
                                     ? AppColors.primaryColor
                                     : AppColors.lightBlue,
                               ),
@@ -172,7 +168,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                           ),
                         ),
                         Text(
-                          "  Yes",
+                          "  ${AppStrings.yes}",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
@@ -190,10 +186,11 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      noSelect = true;
-                      yesSelect = false;
+                      controller.noSelect.value = true;
+                      controller.yesSelect.value = false;
+                      controller.saveSelectedValue();
                       controller.pageController.nextPage(
-                        duration: const Duration(milliseconds: 500),
+                        duration: const Duration(milliseconds: 700),
                         curve: Curves.easeIn,
                       );
                     });
@@ -205,7 +202,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                         borderRadius: BorderRadius.circular(5),
                         color: const Color(0xFFCED7D9).withOpacity(0.37),
                         border: Border.all(
-                          color: noSelect == true
+                          color: controller.noSelect.value
                               ? const Color(0xFF000000)
                               : Colors.transparent,
                           width: 1,
@@ -220,7 +217,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                           height: 22,
                           width: 22,
                           decoration: BoxDecoration(
-                            color: noSelect == true
+                            color: controller.noSelect.value
                                 ? const Color(0xFF5C5C5C)
                                 : const Color(0xFFF5F9F9),
                             borderRadius: BorderRadius.circular(3),
@@ -231,11 +228,11 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                           ),
                           child: Center(
                             child: Text(
-                              "N",
+                              AppStrings.n,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
-                                color: noSelect == true
+                                color: controller.noSelect.value
                                     ? AppColors.primaryColor
                                     : AppColors.lightBlue,
                               ),
@@ -243,7 +240,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                           ),
                         ),
                         Text(
-                          "  No",
+                          "  ${AppStrings.no}",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,

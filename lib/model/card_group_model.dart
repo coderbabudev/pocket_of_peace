@@ -1,21 +1,21 @@
 class CardGroup {
-  final int id;
-  final String skillCategory;
-  final String subSkillCategory;
+  final int? id;
+  final String? skillCategory;
+  final String? subSkillCategory;
   final List<CardItem> cardList;
 
   CardGroup({
-    required this.id,
-    required this.skillCategory,
-    required this.subSkillCategory,
+    this.id,
+    this.skillCategory,
+    this.subSkillCategory,
     required this.cardList,
   });
 
   factory CardGroup.fromJson(Map<String, dynamic> json) {
     return CardGroup(
-      id: json['id'],
-      skillCategory: json['skill_category'],
-      subSkillCategory: json['sub_skill_category'],
+      id: json['id'] ?? 0,
+      skillCategory: json['skill_category'] ?? '',
+      subSkillCategory: json['sub_skill_category'] ?? '',
       cardList: (json['card_list'] as List)
           .map((item) => CardItem.fromJson(item))
           .toList(),

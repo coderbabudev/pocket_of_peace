@@ -16,8 +16,6 @@ class MultipleChoiceCardWidget extends StatefulWidget {
     this.image,
     this.video,
     this.maxSelection,
-    this.valueColor,
-    this.progressValue = 0,
   });
 
   final String? title;
@@ -27,8 +25,6 @@ class MultipleChoiceCardWidget extends StatefulWidget {
   final String? image;
   final String? video;
   final int? maxSelection;
-  final double progressValue;
-  final Animation<Color?>? valueColor;
 
   @override
   State<MultipleChoiceCardWidget> createState() =>
@@ -37,21 +33,23 @@ class MultipleChoiceCardWidget extends StatefulWidget {
 
 class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
   late VideoPlayerController _controller;
-  List<int> selectedCard = [];
+
   CardGroupController controller = Get.put(CardGroupController());
 
   @override
   void initState() {
     super.initState();
-    if (widget.video != null) {
-      _controller =
-          VideoPlayerController.asset('${Assets.videoPath}${widget.video!}')
-            ..initialize().then((_) {
-              setState(() {});
-              _controller.setLooping(true);
-              _controller.play();
-            });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (widget.video != null) {
+        _controller =
+            VideoPlayerController.asset('assets/videos/${widget.video!}')
+              ..initialize().then((_) {
+                setState(() {});
+                _controller.setLooping(true);
+                _controller.play();
+              });
+      }
+    });
   }
 
   @override
@@ -90,15 +88,15 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                   itemCount: widget.options!.length,
                   itemBuilder: (BuildContext context, int index) {
                     final option = widget.options![index];
-                    final isSelected = selectedCard.contains(index);
+                    final isSelected = controller.selectedCard.contains(index);
                     return GestureDetector(
                       onTap: () {
                         setState(() {
                           if (isSelected) {
-                            selectedCard.remove(index);
-                          } else if (selectedCard.length <
+                            controller.selectedCard.remove(index);
+                          } else if (controller.selectedCard.length <
                               widget.maxSelection!) {
-                            selectedCard.add(index);
+                            controller.selectedCard.add(index);
                             controller.pageController.nextPage(
                               duration: const Duration(milliseconds: 500),
                               curve: Curves.easeIn,
@@ -106,8 +104,6 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                           } else {
                             Get.showSnackbar(
                               GetSnackBar(
-                                message:
-                                    'You can select up to ${widget.maxSelection} options.',
                                 margin: const EdgeInsets.symmetric(
                                     vertical: 20, horizontal: 20),
                                 snackPosition: SnackPosition.BOTTOM,
@@ -148,7 +144,7 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Image.asset(
-                              '${Assets.assetsPath}${option.image ?? Assets.placeholder}',
+                              'assets/icons/${option.image ?? Assets.placeholder}',
                               height: 83,
                               width: 117,
                             ).paddingOnly(
@@ -209,39 +205,37 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
               : Center(
                   child: widget.image != null
                       ? Image.asset(
-                          '${Assets.assetsPath}${widget.image!}',
+                          'assets/icons/${widget.image!}',
                           height: 102,
                           width: 108,
                           filterQuality: FilterQuality.high,
                         )
-                      : widget.video != null
-                          ? _controller.value.isInitialized
-                              ? SizedBox(
-                                  height: 210,
-                                  width: 303,
-                                  child: Stack(
-                                    fit: StackFit.loose,
-                                    alignment: Alignment.bottomRight,
-                                    children: [
-                                      GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              controller.isClick.value =
-                                                  !controller.isClick.value;
-                                            });
-                                          },
-                                          child: VideoPlayer(_controller)),
-                                      if (controller.isClick.value)
-                                        const Icon(
-                                          Icons.fullscreen,
-                                          size: 35,
-                                          color: Color(0xFF000000),
-                                        ).paddingOnly(bottom: 5, right: 5)
-                                    ],
-                                  ),
-                                )
-                              : Container()
-                          : const SizedBox(),
+                      : _controller.value.isInitialized
+                          ? SizedBox(
+                              height: 210,
+                              width: 303,
+                              child: Stack(
+                                fit: StackFit.loose,
+                                alignment: Alignment.bottomRight,
+                                children: [
+                                  GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          controller.isClick.value =
+                                              !controller.isClick.value;
+                                        });
+                                      },
+                                      child: VideoPlayer(_controller)),
+                                  if (controller.isClick.value)
+                                    const Icon(
+                                      Icons.fullscreen,
+                                      size: 35,
+                                      color: Color(0xFF000000),
+                                    ).paddingOnly(bottom: 5, right: 5)
+                                ],
+                              ),
+                            )
+                          : Container(),
                 ).paddingOnly(top: 25, bottom: 30),
           if (widget.subTitle != null)
             Text(
