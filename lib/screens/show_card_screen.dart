@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -33,13 +32,11 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
   void initState() {
     super.initState();
     controller.cardList.shuffle(Random.secure());
-    controller.initializeMandatoryCategories(widget.minuteValue.toInt());
-    int totalCards = math.max(3, widget.minuteValue.toInt());
-    List<CardGroup> selectedCardGroups =
-        controller.selectCards(controller.cardList, totalCards);
-    selectedCardGroups.addAll(controller.mandatoryCategories);
-    controller.cardTypeList =
-        selectedCardGroups.expand((group) => group.cardList).toList();
+    int n = widget.minuteValue.toInt();
+    controller.initializeMandatoryCategories(n);
+    controller.cardTypeList = controller.selectedCardGroups
+        .expand((group) => group.cardList)
+        .toList();
     controller.card = [];
     controller.card.addAll(data(controller.cardTypeList));
   }
@@ -48,28 +45,8 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (controller.pageController.hasClients &&
-            controller.pageController.page?.toInt() ==
-                controller.card.length - 1) {
-          showExitDialog(context, controller);
-          return false;
-        }
         showExitDialog(context, controller);
         return false;
-        // if (controller.pageController.hasClients &&
-        //     controller.pageController.page!.toInt() == 0) {
-        //   setState(() {
-        //     controller.currentMinValue.value = 0.0;
-        //     controller.progressValue.value = 0.0;
-        //   });
-        //   return true;
-        // } else {
-        //   controller.pageController.previousPage(
-        //     duration: const Duration(milliseconds: 300),
-        //     curve: Curves.easeInOut,
-        //   );
-        //   return false; // Prevent exiting the screen
-        // }
       },
       child: Scaffold(
         body: Stack(
@@ -113,18 +90,16 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
                     child: PageView.builder(
                       controller: controller.pageController,
                       itemCount: controller.card.length,
-                      physics: controller.pageController.hasClients &&
-                              controller.pageController.page?.toInt() ==
-                                  (controller.card.length - 1)
+                      physics: controller.currentPage.value ==
+                              controller.card.length - 1
                           ? const NeverScrollableScrollPhysics()
-                          : null,
-                      clipBehavior: Clip.hardEdge,
-                      key: const PageStorageKey('card_page'),
+                          : const ScrollPhysics(),
                       itemBuilder: (context, groupIndex) {
                         return controller.card[groupIndex];
                       },
                       scrollDirection: Axis.horizontal,
                       onPageChanged: (index) {
+                        controller.currentPage.value = index;
                         setState(() {
                           controller.progressValue.value =
                               (index + 1) / controller.card.length;
@@ -166,7 +141,6 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
               numOfTextFields: card.numTextFields ?? 1,
               isExpandable: card.isExpandable!,
               placeholderTexts: card.placeholderTexts,
-              cardIndex: card.numTextFields ?? 0,
             );
           case 'YesNoCard':
             return YesOrNoCardWidget(
@@ -174,10 +148,11 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
               subTitle: card.subtitle,
               image: card.image,
               video: card.video,
+              id: 'card_$index',
             );
           case 'StatementCard':
             return StatementCardWidget(
-              image: card.image,
+              image: card.image ?? '',
               title: card.title,
               subTitle: card.subtitle,
               video: card.video,

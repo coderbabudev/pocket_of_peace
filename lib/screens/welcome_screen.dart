@@ -87,7 +87,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             ),
             Obx(() => SliderTheme(
                   data: SliderThemeData(
-                    tickMarkShape: SliderTickMarkShape.noTickMark, //
+                    tickMarkShape: SliderTickMarkShape.noTickMark,
                   ),
                   child: Slider.adaptive(
                     min: 0.0,

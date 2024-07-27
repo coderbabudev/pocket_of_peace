@@ -4,6 +4,7 @@ import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/model/card_group_model.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
+import 'package:pocket_of_peace/widgets/animation_widget.dart';
 import 'package:pocket_of_peace/widgets/exit_dialog_widget.dart';
 import 'package:video_player/video_player.dart';
 
@@ -33,7 +34,7 @@ class MultipleChoiceCardWidget extends StatefulWidget {
 }
 
 class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? videoController;
 
   CardGroupController controller = Get.put(CardGroupController());
 
@@ -41,15 +42,13 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      print(widget.image);
-      print(widget.video);
       if (widget.video != null) {
-        _controller =
+        videoController =
             VideoPlayerController.asset('assets/videos/${widget.video!}')
               ..initialize().then((_) {
                 setState(() {});
-                _controller.setLooping(true);
-                _controller.play();
+                videoController?.setLooping(true);
+                videoController?.play();
               });
       }
     });
@@ -57,7 +56,7 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    videoController?.dispose();
     super.dispose();
   }
 
@@ -91,15 +90,16 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                   itemCount: widget.options!.length,
                   itemBuilder: (BuildContext context, int index) {
                     final option = widget.options![index];
-                    final isSelected = controller.selectedCard.contains(index);
+                    final isSelected =
+                        controller.selectedMultiChoiceCard.contains(index);
                     return GestureDetector(
                       onTap: () {
                         setState(() {
                           if (isSelected) {
-                            controller.selectedCard.remove(index);
-                          } else if (controller.selectedCard.length <
+                            controller.selectedMultiChoiceCard.remove(index);
+                          } else if (controller.selectedMultiChoiceCard.length <
                               widget.maxSelection!) {
-                            controller.selectedCard.add(index);
+                            controller.selectedMultiChoiceCard.add(index);
                             controller.pageController.nextPage(
                               duration: const Duration(milliseconds: 500),
                               curve: Curves.easeIn,
@@ -129,15 +129,24 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Image.asset(
-                              'assets/icons/${option.image ?? Assets.placeholder}',
-                              height: 83,
-                              width: 117,
-                            ).paddingOnly(
-                              top: 9,
-                              left: 15,
-                              right: 16,
-                            ),
+                            if (option.image != null)
+                              AnimationWidget(
+                                animationType: 'FADE',
+                                child: Image.asset(
+                                  'assets/icons/${option.image}',
+                                  height: 83,
+                                  width: 117,
+                                ).paddingOnly(top: 9, left: 15, right: 16),
+                              ),
+                            if (option.image == null)
+                              AnimationWidget(
+                                animationType: 'FADE',
+                                child: Image.asset(
+                                  Assets.placeholder,
+                                  height: 83,
+                                  width: 117,
+                                ).paddingOnly(top: 9, left: 15, right: 16),
+                              ),
                             const SizedBox(height: 14),
                             Wrap(
                               crossAxisAlignment: WrapCrossAlignment.center,
@@ -190,35 +199,43 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                 ).paddingOnly(bottom: 30)
               : Center(
                   child: widget.image != null
-                      ? Image.asset(
-                          'assets/icons/${widget.image!}',
-                          height: 102,
-                          width: 108,
-                          filterQuality: FilterQuality.high,
+                      ? AnimationWidget(
+                          animationType: "FADE",
+                          child: Image.asset(
+                            'assets/icons/${widget.image!}',
+                            height: 102,
+                            width: 108,
+                            filterQuality: FilterQuality.high,
+                          ),
                         )
-                      : _controller.value.isInitialized
-                          ? SizedBox(
-                              height: 210,
-                              width: 303,
-                              child: Stack(
-                                fit: StackFit.loose,
-                                alignment: Alignment.bottomRight,
-                                children: [
-                                  GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          controller.isClick.value =
-                                              !controller.isClick.value;
-                                        });
-                                      },
-                                      child: VideoPlayer(_controller)),
-                                  if (controller.isClick.value)
-                                    const Icon(
-                                      Icons.fullscreen,
-                                      size: 35,
-                                      color: Color(0xFF000000),
-                                    ).paddingOnly(bottom: 5, right: 5)
-                                ],
+                      : widget.video != null &&
+                              videoController != null &&
+                              videoController!.value.isInitialized
+                          ? AnimationWidget(
+                              animationType: "FADE",
+                              child: SizedBox(
+                                height: 210,
+                                width: 303,
+                                child: Stack(
+                                  fit: StackFit.loose,
+                                  alignment: Alignment.bottomRight,
+                                  children: [
+                                    GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            controller.isClick.value =
+                                                !controller.isClick.value;
+                                          });
+                                        },
+                                        child: VideoPlayer(videoController!)),
+                                    if (controller.isClick.value)
+                                      const Icon(
+                                        Icons.fullscreen,
+                                        size: 35,
+                                        color: Color(0xFF000000),
+                                      ).paddingOnly(bottom: 5, right: 5)
+                                  ],
+                                ),
                               ),
                             )
                           : Container(),

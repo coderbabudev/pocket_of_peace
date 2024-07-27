@@ -3,7 +3,10 @@ import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
+import 'package:pocket_of_peace/widgets/animation_widget.dart';
 import 'package:video_player/video_player.dart';
+
+import '../model/save_value_model.dart';
 
 class YesOrNoCardWidget extends StatefulWidget {
   const YesOrNoCardWidget({
@@ -12,8 +15,10 @@ class YesOrNoCardWidget extends StatefulWidget {
     this.subTitle,
     this.image,
     this.video,
+    required this.id,
   });
 
+  final String id;
   final String? title;
   final String? subTitle;
   final String? image;
@@ -24,7 +29,7 @@ class YesOrNoCardWidget extends StatefulWidget {
 }
 
 class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? videoController;
   CardGroupController controller = Get.put(CardGroupController());
 
   @override
@@ -32,26 +37,26 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (widget.video != null) {
-        _controller =
+        videoController =
             VideoPlayerController.asset('assets/videos/${widget.video!}')
               ..initialize().then((_) {
                 setState(() {});
-                _controller.setLooping(true);
-                _controller.play();
+                videoController?.setLooping(true);
+                videoController?.play();
               });
       }
-      controller.loadSelectedValue();
     });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    videoController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    YesNOButtonStatus cardState = controller.getCardState(widget.id);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,46 +64,56 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
           Text(
             widget.title ?? '',
             style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: AppColors.lightBlue,
-                letterSpacing: 0.3),
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: AppColors.lightBlue,
+              letterSpacing: 0.3,
+            ),
           ).paddingOnly(top: 104, left: 30, right: 34),
-          Center(
-            child: widget.image != null
-                ? Image.asset(
-                    'assets/icons/${widget.image!}',
-                    height: 85,
-                    width: 76,
-                    filterQuality: FilterQuality.high,
-                  ).paddingOnly(top: 29)
-                : _controller.value.isInitialized
-                    ? SizedBox(
-                        height: 210,
-                        width: 303,
-                        child: Stack(
-                          fit: StackFit.loose,
-                          alignment: Alignment.bottomRight,
-                          children: [
-                            GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    controller.isClick.value =
-                                        !controller.isClick.value;
-                                  });
-                                },
-                                child: VideoPlayer(_controller)),
-                            if (controller.isClick.value)
-                              const Icon(
-                                Icons.fullscreen,
-                                size: 35,
-                                color: Color(0xFF000000),
-                              ).paddingOnly(bottom: 5, right: 5)
-                          ],
-                        ),
-                      ).paddingOnly(top: 29)
-                    : Container(),
-          ),
+          if (widget.image != null)
+            Center(
+              child: AnimationWidget(
+                animationType: "FADE",
+                child: Image.asset(
+                  'assets/icons/${widget.image!}',
+                  height: 85,
+                  width: 76,
+                  filterQuality: FilterQuality.high,
+                ).paddingOnly(top: 29),
+              ),
+            ).paddingOnly(top: 29),
+          if (widget.video != null &&
+              videoController != null &&
+              videoController!.value.isInitialized)
+            Center(
+              child: AnimationWidget(
+                animationType: "FADE",
+                child: SizedBox(
+                  height: 210,
+                  width: 303,
+                  child: Stack(
+                    fit: StackFit.loose,
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              controller.isClick.value =
+                                  !controller.isClick.value;
+                            });
+                          },
+                          child: VideoPlayer(videoController!)),
+                      if (controller.isClick.value)
+                        const Icon(
+                          Icons.fullscreen,
+                          size: 35,
+                          color: Color(0xFF000000),
+                        ).paddingOnly(bottom: 5, right: 5)
+                    ],
+                  ),
+                ),
+              ),
+            ).paddingOnly(top: 29),
           Text(
             widget.subTitle ?? '',
             style: TextStyle(
@@ -113,9 +128,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      controller.yesSelect.value = true;
-                      controller.noSelect.value = false;
-                      controller.saveSelectedValue();
+                      controller.updateCardState(widget.id, true, false);
                       controller.pageController.nextPage(
                         duration: const Duration(milliseconds: 700),
                         curve: Curves.easeIn,
@@ -129,7 +142,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                         borderRadius: BorderRadius.circular(5),
                         color: const Color(0xFFCED7D9).withOpacity(0.37),
                         border: Border.all(
-                          color: controller.yesSelect.value
+                          color: cardState.isYesSelected
                               ? const Color(0xFF000000)
                               : Colors.transparent,
                           width: 1,
@@ -144,7 +157,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                           height: 22,
                           width: 22,
                           decoration: BoxDecoration(
-                            color: controller.yesSelect.value
+                            color: cardState.isYesSelected
                                 ? const Color(0xFF5C5C5C)
                                 : const Color(0xFFF5F9F9),
                             borderRadius: BorderRadius.circular(3),
@@ -160,7 +173,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
-                                color: controller.yesSelect.value
+                                color: cardState.isYesSelected
                                     ? AppColors.primaryColor
                                     : AppColors.lightBlue,
                               ),
@@ -186,9 +199,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      controller.noSelect.value = true;
-                      controller.yesSelect.value = false;
-                      controller.saveSelectedValue();
+                      controller.updateCardState(widget.id, false, true);
                       controller.pageController.nextPage(
                         duration: const Duration(milliseconds: 700),
                         curve: Curves.easeIn,
@@ -202,7 +213,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                         borderRadius: BorderRadius.circular(5),
                         color: const Color(0xFFCED7D9).withOpacity(0.37),
                         border: Border.all(
-                          color: controller.noSelect.value
+                          color: cardState.isNoSelected
                               ? const Color(0xFF000000)
                               : Colors.transparent,
                           width: 1,
@@ -217,7 +228,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                           height: 22,
                           width: 22,
                           decoration: BoxDecoration(
-                            color: controller.noSelect.value
+                            color: cardState.isNoSelected
                                 ? const Color(0xFF5C5C5C)
                                 : const Color(0xFFF5F9F9),
                             borderRadius: BorderRadius.circular(3),
@@ -232,7 +243,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
-                                color: controller.noSelect.value
+                                color: cardState.isNoSelected
                                     ? AppColors.primaryColor
                                     : AppColors.lightBlue,
                               ),

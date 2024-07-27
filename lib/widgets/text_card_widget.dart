@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
+import 'package:pocket_of_peace/widgets/animation_widget.dart';
 import 'package:video_player/video_player.dart';
 
 class TextCardWidget extends StatefulWidget {
@@ -14,7 +15,6 @@ class TextCardWidget extends StatefulWidget {
     this.image,
     this.isExpandable = false,
     this.video,
-    required this.cardIndex,
   });
 
   final String? title;
@@ -24,7 +24,6 @@ class TextCardWidget extends StatefulWidget {
   final String? image;
   final String? video;
   final bool isExpandable;
-  final int cardIndex;
 
   @override
   State<TextCardWidget> createState() => _TextCardWidgetState();
@@ -34,7 +33,7 @@ class _TextCardWidgetState extends State<TextCardWidget> {
   final List<TextEditingController> _controllers = [];
   final List<String> hintTextList = [];
   final List<String> textValues = [];
-  late VideoPlayerController _controller;
+  VideoPlayerController? videoController;
   CardGroupController controller = Get.put(CardGroupController());
 
   @override
@@ -46,21 +45,20 @@ class _TextCardWidgetState extends State<TextCardWidget> {
         hintTextList.add(widget.placeholderTexts![i].toString());
       }
       if (widget.video != null) {
-        _controller =
+        videoController =
             VideoPlayerController.asset('assets/videos/${widget.video!}')
               ..initialize().then((_) {
                 setState(() {});
               });
-        _controller.setLooping(true);
-        _controller.play();
+        videoController?.setLooping(true);
+        videoController?.play();
       }
     });
   }
 
   void _initializeTextControllers() {
     for (int i = 0; i < widget.numOfTextFields; i++) {
-      String storedValue = controller.getTextValue(widget.cardIndex, i);
-      _controllers.add(TextEditingController(text: storedValue));
+      _controllers.add(TextEditingController());
     }
   }
 
@@ -69,7 +67,7 @@ class _TextCardWidgetState extends State<TextCardWidget> {
     for (var controller in _controllers) {
       controller.dispose();
     }
-    _controller.dispose();
+    videoController?.dispose();
     super.dispose();
   }
 
@@ -97,41 +95,49 @@ class _TextCardWidgetState extends State<TextCardWidget> {
               letterSpacing: 0.3,
             ),
           ).paddingOnly(top: 24, left: 34, right: 47),
-        Center(
-          child: widget.image != null
-              ? Image.asset(
-                  'assets/icons/${widget.image!}',
-                  height: 102,
-                  width: 108,
-                  filterQuality: FilterQuality.high,
-                )
-              : _controller.value.isInitialized
-                  ? SizedBox(
-                      height: 210,
-                      width: 303,
-                      child: Stack(
-                        fit: StackFit.loose,
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  controller.isClick.value =
-                                      !controller.isClick.value;
-                                });
-                              },
-                              child: VideoPlayer(_controller)),
-                          if (controller.isClick.value)
-                            const Icon(
-                              Icons.fullscreen,
-                              size: 35,
-                              color: Color(0xFF000000),
-                            ).paddingOnly(bottom: 5, right: 5)
-                        ],
-                      ),
-                    )
-                  : Container(),
-        ).paddingOnly(top: 25, bottom: 30),
+        if (widget.image != null)
+          Center(
+              child: AnimationWidget(
+            animationType: "FADE",
+            child: Image.asset(
+              'assets/icons/${widget.image!}',
+              height: 102,
+              width: 108,
+              filterQuality: FilterQuality.high,
+            ),
+          ).paddingOnly(top: 25, bottom: 30)),
+        if (widget.video != null &&
+            videoController != null &&
+            videoController!.value.isInitialized)
+          Center(
+            child: AnimationWidget(
+              animationType: "FADE",
+              child: SizedBox(
+                height: 210,
+                width: 303,
+                child: Stack(
+                  fit: StackFit.loose,
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            controller.isClick.value =
+                                !controller.isClick.value;
+                          });
+                        },
+                        child: VideoPlayer(videoController!)),
+                    if (controller.isClick.value)
+                      const Icon(
+                        Icons.fullscreen,
+                        size: 35,
+                        color: Color(0xFF000000),
+                      ).paddingOnly(bottom: 5, right: 5)
+                  ],
+                ),
+              ),
+            ),
+          ).paddingOnly(top: 25, bottom: 30),
         ListView.builder(
           itemCount: _controllers.length,
           shrinkWrap: true,
@@ -145,13 +151,6 @@ class _TextCardWidgetState extends State<TextCardWidget> {
                 color: Color(0xFF5F8599),
                 letterSpacing: 0.3,
               ),
-              onChanged: (value) {
-                controller.setTextValue(
-                  widget.cardIndex,
-                  index,
-                  _controllers[index].text,
-                );
-              },
               maxLines: widget.isExpandable ? null : 1,
               minLines: widget.isExpandable ? 1 : 1,
               textInputAction: TextInputAction.newline,
