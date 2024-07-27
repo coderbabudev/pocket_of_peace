@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
+import 'package:pocket_of_peace/services/shared_prefrences_service.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
 
@@ -80,9 +81,10 @@ dynamic showExitDialog(
                   children: [
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           controller.currentMinValue.value = 0;
                           controller.progressValue.value = 0;
+                          await PreferenceUtils.clearAllPreferences();
                           Get.offAll(
                             () => const WelcomeScreen(),
                           );
@@ -136,6 +138,32 @@ dynamic showExitDialog(
           ),
         ),
       ],
+    ),
+  );
+}
+
+dynamic showMessageSnackBar(String message, Color bgColor) {
+  Get.showSnackbar(
+    GetSnackBar(
+      margin: const EdgeInsets.symmetric(
+        vertical: 20,
+        horizontal: 20,
+      ),
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: bgColor,
+      duration: const Duration(seconds: 2),
+      borderRadius: 16,
+      messageText: Center(
+        child: Text(
+          message,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColors.primaryColor,
+          ),
+        ),
+      ),
+      dismissDirection: DismissDirection.startToEnd,
     ),
   );
 }

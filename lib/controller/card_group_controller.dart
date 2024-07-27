@@ -76,7 +76,7 @@ class CardGroupController extends GetxController {
     return selected;
   }
 
-  void initializeMandatoryCategories() {
+  void initializeMandatoryCategories(int n) {
     mandatoryCategories = [
       selectCards(cardList, 1).firstWhere(
         (group) => group.skillCategory == "boost_intro",
@@ -86,6 +86,10 @@ class CardGroupController extends GetxController {
         (group) => group.skillCategory == "surrounding_intro",
         orElse: () =>
             CardGroup(skillCategory: "surrounding_intro", cardList: []),
+      ),
+      selectCards(cardList, n).firstWhere(
+        (group) => group.skillCategory == "surrounding",
+        orElse: () => CardGroup(skillCategory: "surrounding", cardList: []),
       ),
       selectCards(cardList, 1).firstWhere(
         (group) => group.skillCategory == "surrounding_outro",
@@ -100,6 +104,10 @@ class CardGroupController extends GetxController {
       selectCards(cardList, 1).firstWhere(
         (group) => group.skillCategory == "body_intro",
         orElse: () => CardGroup(skillCategory: "body_intro", cardList: []),
+      ),
+      selectCards(cardList, n).firstWhere(
+        (group) => group.skillCategory == "body",
+        orElse: () => CardGroup(skillCategory: "body", cardList: []),
       ),
       selectCards(cardList, 1).firstWhere(
         (group) => group.skillCategory == "body_outro",
@@ -138,5 +146,6 @@ class CardGroupController extends GetxController {
       selectedValue = 'None'; // Default case, if neither is selected
     }
     await PreferenceUtils.setYesNoBtnValue('selected_value', selectedValue);
+    update();
   }
 }

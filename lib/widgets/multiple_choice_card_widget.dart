@@ -4,6 +4,7 @@ import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/model/card_group_model.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
+import 'package:pocket_of_peace/widgets/exit_dialog_widget.dart';
 import 'package:video_player/video_player.dart';
 
 class MultipleChoiceCardWidget extends StatefulWidget {
@@ -40,6 +41,8 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      print(widget.image);
+      print(widget.video);
       if (widget.video != null) {
         _controller =
             VideoPlayerController.asset('assets/videos/${widget.video!}')
@@ -102,26 +105,9 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                               curve: Curves.easeIn,
                             );
                           } else {
-                            Get.showSnackbar(
-                              GetSnackBar(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 20, horizontal: 20),
-                                snackPosition: SnackPosition.BOTTOM,
-                                backgroundColor: AppColors.steelBlue,
-                                duration: const Duration(seconds: 2),
-                                borderRadius: 16,
-                                messageText: Center(
-                                  child: Text(
-                                    'You can select up to ${widget.maxSelection} options.',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.primaryColor,
-                                    ),
-                                  ),
-                                ),
-                                dismissDirection: DismissDirection.startToEnd,
-                              ),
+                            showMessageSnackBar(
+                              'You can select up to ${widget.maxSelection} options.',
+                              AppColors.steelBlue,
                             );
                           }
                         });

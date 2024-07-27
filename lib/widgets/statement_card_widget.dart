@@ -22,23 +22,25 @@ class StatementCardWidget extends StatefulWidget {
   State<StatementCardWidget> createState() => _StatementCardWidgetState();
 }
 
-class _StatementCardWidgetState extends State<StatementCardWidget> {
+class _StatementCardWidgetState extends State<StatementCardWidget>
+    with SingleTickerProviderStateMixin {
+  AnimationController? animationController;
   CardGroupController controller = Get.put(CardGroupController());
-  late VideoPlayerController _controller;
+  VideoPlayerController? videoController;
 
   @override
   void initState() {
     super.initState();
-    print("widget.image.path : ${widget.image}");
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      print("widget.image.path : ${widget.image}");
       if (widget.video != null) {
         print("widget.video.path : ${widget.video}");
-        _controller =
+        videoController =
             VideoPlayerController.asset('assets/videos/${widget.video!}')
               ..initialize().then((_) {
                 setState(() {});
-                _controller.setLooping(true);
-                _controller.play();
+                videoController?.setLooping(true);
+                videoController?.play();
               });
       }
     });
@@ -46,7 +48,7 @@ class _StatementCardWidgetState extends State<StatementCardWidget> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    videoController?.dispose();
     super.dispose();
   }
 
@@ -67,41 +69,44 @@ class _StatementCardWidgetState extends State<StatementCardWidget> {
                 letterSpacing: 0.3,
               ),
             ).paddingOnly(top: 108),
-          Center(
-            child: widget.image != null
-                ? Image.asset(
-                    'assets/icons/${widget.image!}',
-                    height: 102,
-                    width: 108,
-                    filterQuality: FilterQuality.high,
-                  )
-                : _controller.value.isInitialized
-                    ? SizedBox(
-                        height: 210,
-                        width: 303,
-                        child: Stack(
-                          fit: StackFit.loose,
-                          alignment: Alignment.bottomRight,
-                          children: [
-                            GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    controller.isClick.value =
-                                        !controller.isClick.value;
-                                  });
-                                },
-                                child: VideoPlayer(_controller)),
-                            if (controller.isClick.value)
-                              const Icon(
-                                Icons.fullscreen,
-                                size: 35,
-                                color: Color(0xFF000000),
-                              ).paddingOnly(bottom: 5, right: 5)
-                          ],
-                        ),
-                      )
-                    : Container(),
-          ).paddingOnly(top: 25, bottom: 30),
+          if (widget.image != null)
+            Center(
+              child: Image.asset(
+                'assets/icons/${widget.image!}',
+                height: 102,
+                width: 108,
+                filterQuality: FilterQuality.high,
+              ),
+            ).paddingOnly(top: 25, bottom: 30),
+          if (widget.video != null &&
+              videoController != null &&
+              videoController!.value.isInitialized)
+            Center(
+              child: SizedBox(
+                height: 210,
+                width: 303,
+                child: Stack(
+                  fit: StackFit.loose,
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            controller.isClick.value =
+                                !controller.isClick.value;
+                          });
+                        },
+                        child: VideoPlayer(videoController!)),
+                    if (controller.isClick.value)
+                      const Icon(
+                        Icons.fullscreen,
+                        size: 35,
+                        color: Color(0xFF000000),
+                      ).paddingOnly(bottom: 5, right: 5)
+                  ],
+                ),
+              ),
+            ).paddingOnly(top: 25, bottom: 30),
           if (widget.subTitle != null)
             Text(
               widget.subTitle!,

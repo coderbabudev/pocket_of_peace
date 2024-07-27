@@ -4,6 +4,7 @@ import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/screens/show_card_screen.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
+import 'package:pocket_of_peace/widgets/exit_dialog_widget.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -50,26 +51,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     );
                   });
                 } else {
-                  Get.showSnackbar(
-                    GetSnackBar(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 20),
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: AppColors.steelBlue,
-                      duration: const Duration(seconds: 2),
-                      borderRadius: 16,
-                      messageText: Center(
-                        child: Text(
-                          AppStrings.timerErrorText,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                      ),
-                      dismissDirection: DismissDirection.startToEnd,
-                    ),
+                  showMessageSnackBar(
+                    AppStrings.timerErrorText,
+                    AppColors.steelBlue,
                   );
                 }
               },

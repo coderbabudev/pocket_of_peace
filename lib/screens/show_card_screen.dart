@@ -33,7 +33,7 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
   void initState() {
     super.initState();
     controller.cardList.shuffle(Random.secure());
-    controller.initializeMandatoryCategories();
+    controller.initializeMandatoryCategories(widget.minuteValue.toInt());
     int totalCards = math.max(3, widget.minuteValue.toInt());
     List<CardGroup> selectedCardGroups =
         controller.selectCards(controller.cardList, totalCards);
@@ -48,19 +48,28 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (controller.pageController.page!.toInt() == 0) {
-          setState(() {
-            controller.currentMinValue.value = 0.0;
-            controller.progressValue.value = 0.0;
-          });
-          return true;
-        } else {
-          controller.pageController.previousPage(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-          return false; // Prevent exiting the screen
+        if (controller.pageController.hasClients &&
+            controller.pageController.page?.toInt() ==
+                controller.card.length - 1) {
+          showExitDialog(context, controller);
+          return false;
         }
+        showExitDialog(context, controller);
+        return false;
+        // if (controller.pageController.hasClients &&
+        //     controller.pageController.page!.toInt() == 0) {
+        //   setState(() {
+        //     controller.currentMinValue.value = 0.0;
+        //     controller.progressValue.value = 0.0;
+        //   });
+        //   return true;
+        // } else {
+        //   controller.pageController.previousPage(
+        //     duration: const Duration(milliseconds: 300),
+        //     curve: Curves.easeInOut,
+        //   );
+        //   return false; // Prevent exiting the screen
+        // }
       },
       child: Scaffold(
         body: Stack(
@@ -109,6 +118,8 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
                                   (controller.card.length - 1)
                           ? const NeverScrollableScrollPhysics()
                           : null,
+                      clipBehavior: Clip.hardEdge,
+                      key: const PageStorageKey('card_page'),
                       itemBuilder: (context, groupIndex) {
                         return controller.card[groupIndex];
                       },

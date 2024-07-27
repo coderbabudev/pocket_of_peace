@@ -19,7 +19,8 @@ class PreferenceUtils {
     return prefs.setString(key, value);
   }
 
-  static Future<void> clearPreferenceValue() async {
-    await _prefsInstance.clear();
+  static Future<bool> clearAllPreferences() async {
+    var prefs = await _instance;
+    return prefs.clear();
   }
 }
