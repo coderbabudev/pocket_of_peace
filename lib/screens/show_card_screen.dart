@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
@@ -31,7 +29,7 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
   @override
   void initState() {
     super.initState();
-    controller.cardList.shuffle(Random.secure());
+    // controller.cardList.shuffle(Random(controller.card.length));
     int n = widget.minuteValue.toInt();
     controller.initializeMandatoryCategories(n);
     controller.cardTypeList = controller.selectedCardGroups

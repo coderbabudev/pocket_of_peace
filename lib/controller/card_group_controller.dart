@@ -35,21 +35,21 @@ class CardGroupController extends GetxController {
 
   void initializeMandatoryCategories(int n) {
     selectedCardGroups = [
+      ...selectCards(cardList, n, skillCategory: "body"),
+      ...selectCards(cardList, n, skillCategory: "surroundings"),
       ...selectCards(cardList, 1, skillCategory: "boost_intro"),
       ...selectCards(cardList, 1, skillCategory: "surrounding_intro"),
-      ...selectCards(cardList, n, skillCategory: "surroundings"),
       ...selectCards(cardList, 1, skillCategory: "surrounding_outro"),
       ...selectCards(cardList, 1, skillCategory: "breathing_middle"),
       ...selectCards(cardList, 1, skillCategory: "body_intro"),
-      ...selectCards(cardList, n, skillCategory: "body"),
       ...selectCards(cardList, 1, skillCategory: "body_outro"),
       ...selectCards(cardList, 1, skillCategory: "breathing_end"),
       ...selectCards(cardList, 1, skillCategory: "final"),
     ].where((group) => group.cardList.isNotEmpty).toList();
 
-    // for (var cardGroup in selectedCardGroups) {
-    //   print('Added skill_category: ${cardGroup.skillCategory}');
-    // }
+    for (var cardGroup in selectedCardGroups) {
+      print('Added skill_category: ${cardGroup.skillCategory}');
+    }
   }
 
   List<CardGroup> selectCards(List<CardGroup> cardGroups, int totalCards,
@@ -59,19 +59,15 @@ class CardGroupController extends GetxController {
         : cardGroups
             .where((group) => group.skillCategory == skillCategory)
             .toList();
-
     return filteredGroups.take(totalCards).toList();
   }
 
   void updateCardState(String id, bool isYesSelected, bool isNoSelected) {
     cardStates[id] = YesNOButtonStatus(
-      id: id,
-      isYesSelected: isYesSelected,
-      isNoSelected: isNoSelected,
-    );
+        id: id, isYesSelected: isYesSelected, isNoSelected: isNoSelected);
   }
 
-  YesNOButtonStatus getCardState(String id) {
+  getCardState(String id) {
     return cardStates[id] ?? YesNOButtonStatus(id: id);
   }
 }

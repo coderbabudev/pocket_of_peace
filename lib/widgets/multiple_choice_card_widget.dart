@@ -76,170 +76,169 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                 letterSpacing: 0.3,
               ),
             ).paddingOnly(top: 103, left: 23, right: 37),
-          widget.hasImage
-              ? GridView.builder(
-                  shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 13,
-                    crossAxisSpacing: 19,
-                    mainAxisExtent: 140,
+          GridView.builder(
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 13,
+              crossAxisSpacing: 19,
+              mainAxisExtent: 140,
+            ),
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(left: 20, right: 39, top: 27),
+            itemCount: widget.options!.length,
+            itemBuilder: (BuildContext context, int index) {
+              final option = widget.options![index];
+              final isSelected =
+                  controller.selectedMultiChoiceCard.contains(index);
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (isSelected) {
+                      controller.selectedMultiChoiceCard.remove(index);
+                    } else if (controller.selectedMultiChoiceCard.length <
+                        widget.maxSelection!) {
+                      controller.selectedMultiChoiceCard.add(index);
+                      controller.pageController.nextPage(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeIn,
+                      );
+                    } else {
+                      showMessageSnackBar(
+                        'You can select up to ${widget.maxSelection} options.',
+                        AppColors.steelBlue,
+                      );
+                    }
+                  });
+                },
+                child: Container(
+                  height: 134,
+                  width: 148,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: isSelected
+                          ? const Color(0xFF000000)
+                          : Colors.transparent,
+                      width: 1,
+                      style: BorderStyle.solid,
+                    ),
+                    color: const Color(0xFFC2E3EB).withOpacity(0.37),
                   ),
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(left: 20, right: 39, top: 27),
-                  itemCount: widget.options!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final option = widget.options![index];
-                    final isSelected =
-                        controller.selectedMultiChoiceCard.contains(index);
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            controller.selectedMultiChoiceCard.remove(index);
-                          } else if (controller.selectedMultiChoiceCard.length <
-                              widget.maxSelection!) {
-                            controller.selectedMultiChoiceCard.add(index);
-                            controller.pageController.nextPage(
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeIn,
-                            );
-                          } else {
-                            showMessageSnackBar(
-                              'You can select up to ${widget.maxSelection} options.',
-                              AppColors.steelBlue,
-                            );
-                          }
-                        });
-                      },
-                      child: Container(
-                        height: 134,
-                        width: 148,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(
-                            color: isSelected
-                                ? const Color(0xFF000000)
-                                : Colors.transparent,
-                            width: 1,
-                            style: BorderStyle.solid,
-                          ),
-                          color: const Color(0xFFC2E3EB).withOpacity(0.37),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (option.image != null)
-                              AnimationWidget(
-                                animationType: 'FADE',
-                                child: Image.asset(
-                                  'assets/icons/${option.image}',
-                                  height: 83,
-                                  width: 117,
-                                ).paddingOnly(top: 9, left: 15, right: 16),
-                              ),
-                            if (option.image == null)
-                              AnimationWidget(
-                                animationType: 'FADE',
-                                child: Image.asset(
-                                  Assets.placeholder,
-                                  height: 83,
-                                  width: 117,
-                                ).paddingOnly(top: 9, left: 15, right: 16),
-                              ),
-                            const SizedBox(height: 14),
-                            Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              alignment: WrapAlignment.start,
-                              runAlignment: WrapAlignment.center,
-                              children: [
-                                Container(
-                                  height: 22,
-                                  width: 22,
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? const Color(0xFF5C5C5C)
-                                        : const Color(0xFFF5F9F9),
-                                    borderRadius: BorderRadius.circular(3),
-                                    border: Border.all(
-                                      width: 0.3,
-                                      color: AppColors.lightBlue,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      String.fromCharCode(index + 65),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                        color: isSelected
-                                            ? AppColors.primaryColor
-                                            : AppColors.lightBlue,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  '  ${option.text ?? 'Other'}',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.lightBlue,
-                                    letterSpacing: 0.3,
-                                  ),
-                                )
-                              ],
-                            ).paddingOnly(left: 14, bottom: 6)
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ).paddingOnly(bottom: 30)
-              : Center(
-                  child: widget.image != null
-                      ? AnimationWidget(
-                          animationType: "FADE",
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.hasImage || option.image != null)
+                        AnimationWidget(
+                          animationType: 'FADE',
                           child: Image.asset(
-                            'assets/icons/${widget.image!}',
-                            height: 102,
-                            width: 108,
-                            filterQuality: FilterQuality.high,
-                          ),
-                        )
-                      : widget.video != null &&
-                              videoController != null &&
-                              videoController!.value.isInitialized
-                          ? AnimationWidget(
-                              animationType: "FADE",
-                              child: SizedBox(
-                                height: 210,
-                                width: 303,
-                                child: Stack(
-                                  fit: StackFit.loose,
-                                  alignment: Alignment.bottomRight,
-                                  children: [
-                                    GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            controller.isClick.value =
-                                                !controller.isClick.value;
-                                          });
-                                        },
-                                        child: VideoPlayer(videoController!)),
-                                    if (controller.isClick.value)
-                                      const Icon(
-                                        Icons.fullscreen,
-                                        size: 35,
-                                        color: Color(0xFF000000),
-                                      ).paddingOnly(bottom: 5, right: 5)
-                                  ],
+                            'assets/icons/${option.image}',
+                            height: 83,
+                            width: 117,
+                          ).paddingOnly(top: 9, left: 15, right: 16),
+                        ),
+                      if (option.image == null)
+                        AnimationWidget(
+                          animationType: 'FADE',
+                          child: Image.asset(
+                            Assets.placeholder,
+                            height: 83,
+                            width: 117,
+                          ).paddingOnly(top: 9, left: 15, right: 16),
+                        ),
+                      const SizedBox(height: 14),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        alignment: WrapAlignment.start,
+                        runAlignment: WrapAlignment.center,
+                        children: [
+                          Container(
+                            height: 22,
+                            width: 22,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? const Color(0xFF5C5C5C)
+                                  : const Color(0xFFF5F9F9),
+                              borderRadius: BorderRadius.circular(3),
+                              border: Border.all(
+                                width: 0.3,
+                                color: AppColors.lightBlue,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                String.fromCharCode(index + 65),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  color: isSelected
+                                      ? AppColors.primaryColor
+                                      : AppColors.lightBlue,
                                 ),
                               ),
-                            )
-                          : Container(),
-                ).paddingOnly(top: 25, bottom: 30),
+                            ),
+                          ),
+                          Text(
+                            '  ${option.text ?? 'Other'}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.lightBlue,
+                              letterSpacing: 0.3,
+                            ),
+                          )
+                        ],
+                      ).paddingOnly(left: 14, bottom: 6)
+                    ],
+                  ),
+                ),
+              );
+            },
+          ).paddingOnly(bottom: 30),
+          if (widget.image != null)
+            Center(
+                child: AnimationWidget(
+              animationType: "FADE",
+              child: Image.asset(
+                'assets/icons/${widget.image!}',
+                height: 102,
+                width: 108,
+                filterQuality: FilterQuality.high,
+              ),
+            )).paddingOnly(top: 25, bottom: 30),
+          if (widget.video != null &&
+              videoController != null &&
+              videoController!.value.isInitialized)
+            Center(
+              child: AnimationWidget(
+                animationType: "FADE",
+                child: SizedBox(
+                  height: 210,
+                  width: 303,
+                  child: Stack(
+                    fit: StackFit.loose,
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              controller.isClick.value =
+                                  !controller.isClick.value;
+                            });
+                          },
+                          child: VideoPlayer(videoController!)),
+                      if (controller.isClick.value)
+                        const Icon(
+                          Icons.fullscreen,
+                          size: 35,
+                          color: Color(0xFF000000),
+                        ).paddingOnly(bottom: 5, right: 5)
+                    ],
+                  ),
+                ),
+              ).paddingOnly(top: 25, bottom: 30),
+            ),
           if (widget.subTitle != null)
             Text(
               widget.subTitle!,
