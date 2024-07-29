@@ -75,7 +75,7 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                 color: AppColors.lightBlue,
                 letterSpacing: 0.3,
               ),
-            ).paddingOnly(top: 103, left: 23, right: 37),
+            ).paddingOnly(left: 23, right: 37),
           GridView.builder(
             shrinkWrap: true,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

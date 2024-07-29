@@ -69,7 +69,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
               color: AppColors.lightBlue,
               letterSpacing: 0.3,
             ),
-          ).paddingOnly(top: 104, left: 30, right: 34),
+          ).paddingOnly(left: 30, right: 34),
           if (widget.image != null)
             Center(
               child: AnimationWidget(

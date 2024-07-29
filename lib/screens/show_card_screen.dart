@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
@@ -29,13 +31,13 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
   @override
   void initState() {
     super.initState();
-    // controller.cardList.shuffle(Random(controller.card.length));
     int n = widget.minuteValue.toInt();
     controller.initializeMandatoryCategories(n);
     controller.cardTypeList = controller.selectedCardGroups
         .expand((group) => group.cardList)
         .toList();
     controller.card = [];
+    controller.cardTypeList.shuffle(Random(controller.card.length));
     controller.card.addAll(data(controller.cardTypeList));
   }
 
@@ -83,7 +85,7 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
                     minHeight: 10,
                     valueColor: AlwaysStoppedAnimation(AppColors.lightBlue),
                     color: AppColors.lightGreen,
-                  ).paddingOnly(left: 29, right: 25),
+                  ).paddingOnly(left: 29, right: 25, bottom: 50),
                   Expanded(
                     child: PageView.builder(
                       controller: controller.pageController,

@@ -44,7 +44,7 @@ class _StatementCardWidgetState extends State<StatementCardWidget> {
                   });
                 }
               }).catchError((error) {
-                print('Error initializing video: $error');
+                throw error;
               });
       }
     });
@@ -72,7 +72,7 @@ class _StatementCardWidgetState extends State<StatementCardWidget> {
                 color: AppColors.lightBlue,
                 letterSpacing: 0.3,
               ),
-            ).paddingOnly(top: 108),
+            ),
           if (widget.image != null)
             AnimationWidget(
               animationType: "FADE",

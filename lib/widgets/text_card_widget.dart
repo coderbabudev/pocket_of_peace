@@ -57,9 +57,11 @@ class _TextCardWidgetState extends State<TextCardWidget> {
   }
 
   void _initializeTextControllers() {
-    for (int i = 0; i < widget.numOfTextFields; i++) {
-      _controllers.add(TextEditingController());
-    }
+    setState(() {
+      for (int i = 0; i < widget.numOfTextFields; i++) {
+        _controllers.add(TextEditingController());
+      }
+    });
   }
 
   @override
@@ -84,7 +86,7 @@ class _TextCardWidgetState extends State<TextCardWidget> {
                 fontWeight: FontWeight.w600,
                 color: AppColors.lightBlue,
                 letterSpacing: 0.3),
-          ).paddingOnly(top: 104, left: 34, right: 26),
+          ).paddingOnly(left: 34, right: 26),
         if (widget.subTitle != null)
           Text(
             widget.subTitle!,
@@ -94,7 +96,7 @@ class _TextCardWidgetState extends State<TextCardWidget> {
               color: AppColors.lightBlue,
               letterSpacing: 0.3,
             ),
-          ).paddingOnly(top: 24, left: 34, right: 47),
+          ).paddingOnly(left: 34, right: 47),
         if (widget.image != null)
           Center(
               child: AnimationWidget(

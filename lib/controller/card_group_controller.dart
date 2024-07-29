@@ -47,9 +47,9 @@ class CardGroupController extends GetxController {
       ...selectCards(cardList, 1, skillCategory: "final"),
     ].where((group) => group.cardList.isNotEmpty).toList();
 
-    for (var cardGroup in selectedCardGroups) {
-      print('Added skill_category: ${cardGroup.skillCategory}');
-    }
+    // for (var cardGroup in selectedCardGroups) {
+    //   print('Added skill_category: ${cardGroup.skillCategory}');
+    // }
   }
 
   List<CardGroup> selectCards(List<CardGroup> cardGroups, int totalCards,
