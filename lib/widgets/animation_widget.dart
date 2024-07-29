@@ -42,6 +42,12 @@ class _AnimationWidgetState extends State<AnimationWidget>
   }
 
   @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return widget.animationType == 'FADE'
         ? FadeTransition(

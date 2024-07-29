@@ -56,7 +56,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    YesNOButtonStatus cardState = controller.getCardState(widget.id);
+    YesNOButtonStates cardState = controller.getYNButtonState(widget.id);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +79,13 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                   height: 85,
                   width: 76,
                   filterQuality: FilterQuality.high,
-                ).paddingOnly(top: 29),
+                  errorBuilder: (context, error, stackTrace) {
+                    return const SizedBox(
+                      height: 0,
+                      width: 0,
+                    );
+                  },
+                ),
               ),
             ).paddingOnly(top: 29),
           if (widget.video != null &&
@@ -128,7 +134,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      controller.updateCardState(widget.id, true, false);
+                      controller.updateYNButtonState(widget.id, true, false);
                       controller.pageController.nextPage(
                         duration: const Duration(milliseconds: 700),
                         curve: Curves.easeIn,
@@ -199,7 +205,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      controller.updateCardState(widget.id, false, true);
+                      controller.updateYNButtonState(widget.id, false, true);
                       controller.pageController.nextPage(
                         duration: const Duration(milliseconds: 700),
                         curve: Curves.easeIn,

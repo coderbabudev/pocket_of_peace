@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/screens/welcome_screen.dart';
-import 'package:pocket_of_peace/services/shared_prefrences_service.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
 
@@ -49,7 +48,6 @@ class _FinishScreenState extends State<FinishScreen> {
           onTap: () async {
             controller.currentMinValue.value = 0.0;
             controller.progressValue.value = 0.0;
-            await PreferenceUtils.clearAllPreferences();
             Get.offAll(() => const WelcomeScreen());
             setState(() {});
           },

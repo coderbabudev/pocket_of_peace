@@ -12,6 +12,7 @@ class MultipleChoiceCardWidget extends StatefulWidget {
   const MultipleChoiceCardWidget({
     super.key,
     this.title,
+    required this.cardId,
     this.subTitle,
     this.hasImage = false,
     this.options,
@@ -20,6 +21,7 @@ class MultipleChoiceCardWidget extends StatefulWidget {
     this.maxSelection,
   });
 
+  final String cardId; // Unique card ID
   final String? title;
   final String? subTitle;
   final bool hasImage;
@@ -35,7 +37,6 @@ class MultipleChoiceCardWidget extends StatefulWidget {
 
 class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
   VideoPlayerController? videoController;
-
   CardGroupController controller = Get.put(CardGroupController());
 
   @override
@@ -50,6 +51,39 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                 videoController?.setLooping(true);
                 videoController?.play();
               });
+      }
+    });
+  }
+
+  void _handleSelection(int index) {
+    if (widget.maxSelection == null) {
+      showMessageSnackBar(
+        'This card does not allow any selections.',
+        AppColors.steelBlue,
+      );
+      return;
+    }
+    setState(() {
+      final currentSelections =
+          controller.getMultiChoiceCardState(widget.cardId);
+      if (currentSelections.contains(index)) {
+        controller.updateMultiChoiceCardState(
+            widget.cardId, index, widget.maxSelection!);
+      } else if (currentSelections.length < widget.maxSelection!) {
+        controller.updateMultiChoiceCardState(
+            widget.cardId, index, widget.maxSelection!);
+        if (controller.getMultiChoiceCardState(widget.cardId).length >=
+            widget.maxSelection!) {
+          controller.pageController.nextPage(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeIn,
+          );
+        }
+      } else {
+        showMessageSnackBar(
+          'You can select up to ${widget.maxSelection} options.',
+          AppColors.steelBlue,
+        );
       }
     });
   }
@@ -89,31 +123,12 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
             itemCount: widget.options!.length,
             itemBuilder: (BuildContext context, int index) {
               final option = widget.options![index];
-              final isSelected =
-                  controller.selectedMultiChoiceCard.contains(index);
+              final isSelected = controller
+                  .getMultiChoiceCardState(widget.cardId)
+                  .contains(index);
               return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    if (isSelected) {
-                      controller.selectedMultiChoiceCard.remove(index);
-                    } else if (controller.selectedMultiChoiceCard.length <
-                        widget.maxSelection!) {
-                      controller.selectedMultiChoiceCard.add(index);
-                      controller.pageController.nextPage(
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.easeIn,
-                      );
-                    } else {
-                      showMessageSnackBar(
-                        'You can select up to ${widget.maxSelection} options.',
-                        AppColors.steelBlue,
-                      );
-                    }
-                  });
-                },
+                onTap: () => _handleSelection(index),
                 child: Container(
-                  height: 134,
-                  width: 148,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(
@@ -147,49 +162,52 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
                           ).paddingOnly(top: 9, left: 15, right: 16),
                         ),
                       const SizedBox(height: 14),
-                      Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        alignment: WrapAlignment.start,
-                        runAlignment: WrapAlignment.center,
-                        children: [
-                          Container(
-                            height: 22,
-                            width: 22,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFF5C5C5C)
-                                  : const Color(0xFFF5F9F9),
-                              borderRadius: BorderRadius.circular(3),
-                              border: Border.all(
-                                width: 0.3,
-                                color: AppColors.lightBlue,
-                                style: BorderStyle.solid,
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 22,
+                              width: 22,
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xFF5C5C5C)
+                                    : const Color(0xFFF5F9F9),
+                                borderRadius: BorderRadius.circular(3),
+                                border: Border.all(
+                                  width: 0.3,
+                                  color: AppColors.lightBlue,
+                                  style: BorderStyle.solid,
+                                ),
                               ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                String.fromCharCode(index + 65),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: isSelected
-                                      ? AppColors.primaryColor
-                                      : AppColors.lightBlue,
+                              child: Center(
+                                child: Text(
+                                  String.fromCharCode(index + 65),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    color: isSelected
+                                        ? AppColors.primaryColor
+                                        : AppColors.lightBlue,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          Text(
-                            '  ${option.text ?? 'Other'}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.lightBlue,
-                              letterSpacing: 0.3,
-                            ),
-                          )
-                        ],
-                      ).paddingOnly(left: 14, bottom: 6)
+                            Flexible(
+                              child: Text(
+                                '  ${option.text ?? 'Other'}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  overflow: TextOverflow.clip,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.lightBlue,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                            )
+                          ],
+                        ).paddingOnly(left: 14, bottom: 6),
+                      )
                     ],
                   ),
                 ),
@@ -198,15 +216,22 @@ class _MultipleChoiceCardWidgetState extends State<MultipleChoiceCardWidget> {
           ).paddingOnly(bottom: 30),
           if (widget.image != null)
             Center(
-                child: AnimationWidget(
-              animationType: "FADE",
-              child: Image.asset(
-                'assets/icons/${widget.image!}',
-                height: 102,
-                width: 108,
-                filterQuality: FilterQuality.high,
+              child: AnimationWidget(
+                animationType: "FADE",
+                child: Image.asset(
+                  'assets/icons/${widget.image!}',
+                  height: 102,
+                  width: 108,
+                  filterQuality: FilterQuality.high,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const SizedBox(
+                      height: 0,
+                      width: 0,
+                    );
+                  },
+                ),
               ),
-            )).paddingOnly(top: 25, bottom: 30),
+            ).paddingOnly(top: 25, bottom: 30),
           if (widget.video != null &&
               videoController != null &&
               videoController!.value.isInitialized)

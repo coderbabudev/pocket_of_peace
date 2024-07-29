@@ -36,7 +36,7 @@ class _StatementCardWidgetState extends State<StatementCardWidget> {
             VideoPlayerController.asset('assets/videos/${widget.video!}')
               ..initialize().then((_) {
                 if (videoController!.value.hasError) {
-                  print('Error: ${videoController!.value.errorDescription}');
+                  throw '${videoController!.value.errorDescription}';
                 } else {
                   setState(() {
                     videoController!.setLooping(true);
@@ -82,6 +82,12 @@ class _StatementCardWidgetState extends State<StatementCardWidget> {
                   height: 102,
                   width: 108,
                   filterQuality: FilterQuality.high,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const SizedBox(
+                      height: 0,
+                      width: 0,
+                    );
+                  },
                 ),
               ).paddingOnly(top: 25, bottom: 30),
             ),

@@ -8,6 +8,7 @@ import 'package:video_player/video_player.dart';
 class TextCardWidget extends StatefulWidget {
   const TextCardWidget({
     super.key,
+    required this.cardId,
     this.title,
     this.subTitle,
     this.numOfTextFields = 1,
@@ -17,6 +18,7 @@ class TextCardWidget extends StatefulWidget {
     this.video,
   });
 
+  final String cardId;
   final String? title;
   final String? subTitle;
   final int numOfTextFields;
@@ -41,8 +43,10 @@ class _TextCardWidgetState extends State<TextCardWidget> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _initializeTextControllers();
-      for (int i = 0; i < widget.placeholderTexts!.length; i++) {
-        hintTextList.add(widget.placeholderTexts![i].toString());
+      if (widget.placeholderTexts != null) {
+        for (int i = 0; i < widget.placeholderTexts!.length; i++) {
+          hintTextList.add(widget.placeholderTexts![i]);
+        }
       }
       if (widget.video != null) {
         videoController =
@@ -59,7 +63,17 @@ class _TextCardWidgetState extends State<TextCardWidget> {
   void _initializeTextControllers() {
     setState(() {
       for (int i = 0; i < widget.numOfTextFields; i++) {
-        _controllers.add(TextEditingController());
+        final textEditingController = TextEditingController(
+          text: controller.getTextFieldStates(widget.cardId, i),
+        );
+        textEditingController.addListener(() {
+          controller.updateTextFieldStates(
+            widget.cardId,
+            i,
+            textEditingController.text,
+          );
+        });
+        _controllers.add(textEditingController);
       }
     });
   }
@@ -106,6 +120,12 @@ class _TextCardWidgetState extends State<TextCardWidget> {
               height: 102,
               width: 108,
               filterQuality: FilterQuality.high,
+              errorBuilder: (context, error, stackTrace) {
+                return const SizedBox(
+                  height: 0,
+                  width: 0,
+                );
+              },
             ),
           ).paddingOnly(top: 25, bottom: 30)),
         if (widget.video != null &&

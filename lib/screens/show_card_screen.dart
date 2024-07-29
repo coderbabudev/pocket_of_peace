@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
@@ -37,7 +35,6 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
         .expand((group) => group.cardList)
         .toList();
     controller.card = [];
-    controller.cardTypeList.shuffle(Random(controller.card.length));
     controller.card.addAll(data(controller.cardTypeList));
   }
 
@@ -131,6 +128,7 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
               hasImage: card.hasImages,
               options: card.options,
               maxSelection: card.selectionMax,
+              cardId: 'card_$index',
             );
           case 'TextCard':
             return TextCardWidget(
@@ -141,6 +139,7 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
               numOfTextFields: card.numTextFields ?? 1,
               isExpandable: card.isExpandable!,
               placeholderTexts: card.placeholderTexts,
+              cardId: 'card_$index',
             );
           case 'YesNoCard':
             return YesOrNoCardWidget(

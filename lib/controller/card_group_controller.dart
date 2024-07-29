@@ -18,11 +18,12 @@ class CardGroupController extends GetxController {
   List<Widget> card = [];
   List<CardGroup> cardList = [];
   List<CardItem> cardTypeList = [];
-  List<int> selectedMultiChoiceCard = [];
   List<CardGroup> selectedCardGroups = [];
 
-  var textValues = <String, String>{}.obs;
-  var cardStates = <String, YesNOButtonStatus>{}.obs;
+  var yNButtonStates = <String, YesNOButtonStates>{}.obs;
+  var multiChoiceCardStates = <String, List<int>>{}.obs;
+  var textFieldStates = <String, List<String>>{}.obs;
+
   PageController pageController = PageController();
 
   Future<void> loadJsonData() async {
@@ -35,21 +36,17 @@ class CardGroupController extends GetxController {
 
   void initializeMandatoryCategories(int n) {
     selectedCardGroups = [
-      ...selectCards(cardList, n, skillCategory: "body"),
-      ...selectCards(cardList, n, skillCategory: "surroundings"),
       ...selectCards(cardList, 1, skillCategory: "boost_intro"),
       ...selectCards(cardList, 1, skillCategory: "surrounding_intro"),
+      ...selectCards(cardList, n, skillCategory: "surroundings"),
       ...selectCards(cardList, 1, skillCategory: "surrounding_outro"),
-      ...selectCards(cardList, 1, skillCategory: "breathing_middle"),
       ...selectCards(cardList, 1, skillCategory: "body_intro"),
+      ...selectCards(cardList, 1, skillCategory: "breathing_middle"),
       ...selectCards(cardList, 1, skillCategory: "body_outro"),
+      ...selectCards(cardList, n, skillCategory: "body"),
       ...selectCards(cardList, 1, skillCategory: "breathing_end"),
       ...selectCards(cardList, 1, skillCategory: "final"),
     ].where((group) => group.cardList.isNotEmpty).toList();
-
-    // for (var cardGroup in selectedCardGroups) {
-    //   print('Added skill_category: ${cardGroup.skillCategory}');
-    // }
   }
 
   List<CardGroup> selectCards(List<CardGroup> cardGroups, int totalCards,
@@ -59,15 +56,58 @@ class CardGroupController extends GetxController {
         : cardGroups
             .where((group) => group.skillCategory == skillCategory)
             .toList();
+    filteredGroups.shuffle();
     return filteredGroups.take(totalCards).toList();
   }
 
-  void updateCardState(String id, bool isYesSelected, bool isNoSelected) {
-    cardStates[id] = YesNOButtonStatus(
-        id: id, isYesSelected: isYesSelected, isNoSelected: isNoSelected);
+  void updateYNButtonState(String id, bool isYesSelected, bool isNoSelected) {
+    yNButtonStates[id] = YesNOButtonStates(
+      id: id,
+      isYesSelected: isYesSelected,
+      isNoSelected: isNoSelected,
+    );
   }
 
-  getCardState(String id) {
-    return cardStates[id] ?? YesNOButtonStatus(id: id);
+  getYNButtonState(String id) {
+    return yNButtonStates[id] ?? YesNOButtonStates(id: id);
+  }
+
+  void updateMultiChoiceCardState(
+      String cardId, int optionIndex, int maxSelection) {
+    if (!multiChoiceCardStates.containsKey(cardId)) {
+      multiChoiceCardStates[cardId] = [];
+    }
+
+    if (multiChoiceCardStates[cardId]!.contains(optionIndex)) {
+      multiChoiceCardStates[cardId]!.remove(optionIndex);
+    } else if (multiChoiceCardStates[cardId]!.length < maxSelection) {
+      multiChoiceCardStates[cardId]!.add(optionIndex);
+    }
+  }
+
+  List<int> getMultiChoiceCardState(String cardId) {
+    return multiChoiceCardStates[cardId] ?? [];
+  }
+
+  void updateTextFieldStates(String cardId, int index, String value) {
+    if (!textFieldStates.containsKey(cardId)) {
+      textFieldStates[cardId] = [];
+    }
+    if (textFieldStates[cardId]!.length <= index) {
+      textFieldStates[cardId]!.add(value);
+    } else {
+      textFieldStates[cardId]![index] = value;
+    }
+    update(); // Notify listeners about the update
+  }
+
+  String getTextFieldStates(String cardId, int index) {
+    return textFieldStates[cardId]?[index] ?? '';
+  }
+
+  void clearCardStateValue() {
+    yNButtonStates.clear();
+    multiChoiceCardStates.clear();
+    textFieldStates.clear();
   }
 }

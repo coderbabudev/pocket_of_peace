@@ -43,6 +43,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             GestureDetector(
               onTap: () {
                 if (controller.currentMinValue.value != 0.0) {
+                  controller.clearCardStateValue();
                   controller.loadJsonData().then((value) {
                     Get.to(
                       () => ShowCardScreen(

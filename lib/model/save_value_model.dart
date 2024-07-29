@@ -1,9 +1,9 @@
-class YesNOButtonStatus {
+class YesNOButtonStates {
   final String id;
   bool isYesSelected;
   bool isNoSelected;
 
-  YesNOButtonStatus({
+  YesNOButtonStates({
     required this.id,
     this.isYesSelected = false,
     this.isNoSelected = false,
