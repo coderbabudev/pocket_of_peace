@@ -213,7 +213,8 @@ class _TextCardWidgetState extends State<TextCardWidget> {
                   ),
                 ),
               ),
-            ).paddingOnly(left: 34, right: 41, top: index == 0 ? 20 : 10);
+            ).paddingOnly(
+                left: 34, right: 41, top: index == 0 ? 20 : 10, bottom: 50);
           },
         )
       ],
