@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
@@ -5,7 +7,7 @@ import 'package:pocket_of_peace/model/card_group_model.dart';
 import 'package:pocket_of_peace/screens/finish_screen.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
-import 'package:pocket_of_peace/widgets/exit_dialog_widget.dart';
+import 'package:pocket_of_peace/widgets/common_build_widget.dart';
 import 'package:pocket_of_peace/widgets/multiple_choice_card_widget.dart';
 import 'package:pocket_of_peace/widgets/statement_card_widget.dart';
 import 'package:pocket_of_peace/widgets/text_card_widget.dart';
@@ -35,6 +37,7 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
         .expand((group) => group.cardList)
         .toList();
     controller.card = [];
+    controller.cardTypeList.shuffle(Random());
     controller.card.addAll(data(controller.cardTypeList));
   }
 
@@ -117,8 +120,33 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
     return [
       ...List.generate(flatCardList.length, (index) {
         CardItem card = controller.cardTypeList[index];
-
         switch (card.type) {
+          case 'StatementCard':
+            return StatementCardWidget(
+              image: card.image ?? '',
+              title: card.title,
+              subTitle: card.subtitle,
+              video: card.video,
+            );
+          case 'YesNoCard':
+            return YesOrNoCardWidget(
+              title: card.title,
+              subTitle: card.subtitle,
+              image: card.image,
+              video: card.video,
+              id: 'card_$index',
+            );
+          case 'TextCard':
+            return TextCardWidget(
+              title: card.title,
+              subTitle: card.subtitle,
+              image: card.image,
+              // video: card.video,
+              numOfTextFields: card.numTextFields ?? 1,
+              isExpandable: card.isExpandable!,
+              placeholderTexts: card.placeholderTexts,
+              cardId: 'card_$index',
+            );
           case 'MultipleChoiceCard':
             return MultipleChoiceCardWidget(
               title: card.title,
@@ -129,32 +157,6 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
               options: card.options,
               maxSelection: card.selectionMax,
               cardId: 'card_$index',
-            );
-          case 'TextCard':
-            return TextCardWidget(
-              title: card.title,
-              subTitle: card.subtitle,
-              image: card.image,
-              video: card.video,
-              numOfTextFields: card.numTextFields ?? 1,
-              isExpandable: card.isExpandable!,
-              placeholderTexts: card.placeholderTexts,
-              cardId: 'card_$index',
-            );
-          case 'YesNoCard':
-            return YesOrNoCardWidget(
-              title: card.title,
-              subTitle: card.subtitle,
-              image: card.image,
-              video: card.video,
-              id: 'card_$index',
-            );
-          case 'StatementCard':
-            return StatementCardWidget(
-              image: card.image ?? '',
-              title: card.title,
-              subTitle: card.subtitle,
-              video: card.video,
             );
           default:
             return Container();

@@ -1,29 +1,25 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' as root_bundle;
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/model/card_group_model.dart';
-import 'package:pocket_of_peace/model/save_value_model.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
 
 class CardGroupController extends GetxController {
   RxDouble progressValue = 0.0.obs;
   RxDouble currentMinValue = 0.0.obs;
   RxInt currentPage = 0.obs;
-
   RxBool isClick = false.obs;
-
   List<Widget> card = [];
-  List<CardGroup> cardList = [];
   List<CardItem> cardTypeList = [];
+  List<CardGroup> cardList = [];
   List<CardGroup> selectedCardGroups = [];
-
   var yNButtonStates = <String, YesNOButtonStates>{}.obs;
   var multiChoiceCardStates = <String, List<int>>{}.obs;
   var textFieldStates = <String, List<String>>{}.obs;
-
   PageController pageController = PageController();
 
   Future<void> loadJsonData() async {
@@ -40,13 +36,17 @@ class CardGroupController extends GetxController {
       ...selectCards(cardList, 1, skillCategory: "surrounding_intro"),
       ...selectCards(cardList, n, skillCategory: "surroundings"),
       ...selectCards(cardList, 1, skillCategory: "surrounding_outro"),
-      ...selectCards(cardList, 1, skillCategory: "body_intro"),
       ...selectCards(cardList, 1, skillCategory: "breathing_middle"),
-      ...selectCards(cardList, 1, skillCategory: "body_outro"),
+      ...selectCards(cardList, 1, skillCategory: "body_intro"),
       ...selectCards(cardList, n, skillCategory: "body"),
+      ...selectCards(cardList, 1, skillCategory: "body_outro"),
       ...selectCards(cardList, 1, skillCategory: "breathing_end"),
       ...selectCards(cardList, 1, skillCategory: "final"),
     ].where((group) => group.cardList.isNotEmpty).toList();
+    selectedCardGroups.shuffle(Random());
+    // for (var cardGroup in selectedCardGroups) {
+    //   print('Added skill_category: ${cardGroup.skillCategory}');
+    // }
   }
 
   List<CardGroup> selectCards(List<CardGroup> cardGroups, int totalCards,
@@ -56,7 +56,7 @@ class CardGroupController extends GetxController {
         : cardGroups
             .where((group) => group.skillCategory == skillCategory)
             .toList();
-    filteredGroups.shuffle();
+    filteredGroups.shuffle(Random());
     return filteredGroups.take(totalCards).toList();
   }
 

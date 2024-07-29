@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/widgets/animation_widget.dart';
-import 'package:video_player/video_player.dart';
 
 class TextCardWidget extends StatefulWidget {
   const TextCardWidget({
@@ -15,7 +14,7 @@ class TextCardWidget extends StatefulWidget {
     this.placeholderTexts,
     this.image,
     this.isExpandable = false,
-    this.video,
+    // this.video,
   });
 
   final String cardId;
@@ -24,8 +23,9 @@ class TextCardWidget extends StatefulWidget {
   final int numOfTextFields;
   final List<String>? placeholderTexts;
   final String? image;
-  final String? video;
   final bool isExpandable;
+
+  // final String? video;
 
   @override
   State<TextCardWidget> createState() => _TextCardWidgetState();
@@ -35,7 +35,8 @@ class _TextCardWidgetState extends State<TextCardWidget> {
   final List<TextEditingController> _controllers = [];
   final List<String> hintTextList = [];
   final List<String> textValues = [];
-  VideoPlayerController? videoController;
+
+  // VideoPlayerController? videoController;
   CardGroupController controller = Get.put(CardGroupController());
 
   @override
@@ -48,15 +49,15 @@ class _TextCardWidgetState extends State<TextCardWidget> {
           hintTextList.add(widget.placeholderTexts![i]);
         }
       }
-      if (widget.video != null) {
-        videoController =
-            VideoPlayerController.asset('assets/videos/${widget.video!}')
-              ..initialize().then((_) {
-                setState(() {});
-              });
-        videoController?.setLooping(true);
-        videoController?.play();
-      }
+      // if (widget.video != null) {
+      //   videoController =
+      //       VideoPlayerController.asset('assets/videos/${widget.video!}')
+      //         ..initialize().then((_) {
+      //           setState(() {});
+      //         });
+      //   videoController?.setLooping(true);
+      //   videoController?.play();
+      // }
     });
   }
 
@@ -83,7 +84,7 @@ class _TextCardWidgetState extends State<TextCardWidget> {
     for (var controller in _controllers) {
       controller.dispose();
     }
-    videoController?.dispose();
+    // videoController?.dispose();
     super.dispose();
   }
 
@@ -93,129 +94,142 @@ class _TextCardWidgetState extends State<TextCardWidget> {
       shrinkWrap: true,
       children: [
         if (widget.title != null)
-          Text(
-            widget.title!,
-            style: TextStyle(
+          Padding(
+            padding: const EdgeInsets.only(left: 34, right: 26),
+            child: Text(
+              widget.title!,
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
                 color: AppColors.lightBlue,
-                letterSpacing: 0.3),
-          ).paddingOnly(left: 34, right: 26),
-        if (widget.subTitle != null)
-          Text(
-            widget.subTitle!,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.lightBlue,
-              letterSpacing: 0.3,
-            ),
-          ).paddingOnly(left: 34, right: 47),
-        if (widget.image != null)
-          Center(
-              child: AnimationWidget(
-            animationType: "FADE",
-            child: Image.asset(
-              'assets/icons/${widget.image!}',
-              height: 102,
-              width: 108,
-              filterQuality: FilterQuality.high,
-              errorBuilder: (context, error, stackTrace) {
-                return const SizedBox(
-                  height: 0,
-                  width: 0,
-                );
-              },
-            ),
-          ).paddingOnly(top: 25, bottom: 30)),
-        if (widget.video != null &&
-            videoController != null &&
-            videoController!.value.isInitialized)
-          Center(
-            child: AnimationWidget(
-              animationType: "FADE",
-              child: SizedBox(
-                height: 210,
-                width: 303,
-                child: Stack(
-                  fit: StackFit.loose,
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            controller.isClick.value =
-                                !controller.isClick.value;
-                          });
-                        },
-                        child: VideoPlayer(videoController!)),
-                    if (controller.isClick.value)
-                      const Icon(
-                        Icons.fullscreen,
-                        size: 35,
-                        color: Color(0xFF000000),
-                      ).paddingOnly(bottom: 5, right: 5)
-                  ],
-                ),
-              ),
-            ),
-          ).paddingOnly(top: 25, bottom: 30),
-        ListView.builder(
-          itemCount: _controllers.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return TextFormField(
-              controller: _controllers[index],
-              cursorColor: AppColors.lightBlue,
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-                color: Color(0xFF5F8599),
                 letterSpacing: 0.3,
               ),
-              maxLines: widget.isExpandable ? null : 1,
-              minLines: widget.isExpandable ? 1 : 1,
-              textInputAction: TextInputAction.newline,
-              decoration: InputDecoration(
-                hintText: hintTextList[index],
-                hintStyle: const TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: Color(0xFF91B4BC),
-                  letterSpacing: 0.3,
-                ),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: AppColors.lightBlue,
-                    style: BorderStyle.solid,
-                    width: 1,
-                  ),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: AppColors.lightBlue,
-                    style: BorderStyle.solid,
-                    width: 1,
-                  ),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: AppColors.lightBlue,
-                    style: BorderStyle.solid,
-                    width: 1,
-                  ),
-                ),
-                disabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: AppColors.lightBlue,
-                    style: BorderStyle.solid,
-                    width: 1,
-                  ),
+            ),
+          ),
+        if (widget.subTitle != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 25, left: 34, right: 47),
+            child: Text(
+              widget.subTitle ?? '',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.lightBlue,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+        if (widget.image != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 30),
+            child: Center(
+              child: AnimationWidget(
+                animationType: "FADE",
+                child: Image.asset(
+                  'assets/icons/${widget.image!}',
+                  height: 102,
+                  width: 108,
+                  filterQuality: FilterQuality.high,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const SizedBox(
+                      height: 0,
+                      width: 0,
+                    );
+                  },
                 ),
               ),
-            ).paddingOnly(
-                left: 34, right: 41, top: index == 0 ? 20 : 10, bottom: 50);
-          },
+            ),
+          ),
+        // if (widget.video != null &&
+        //     videoController != null &&
+        //     videoController!.value.isInitialized)
+        //   Center(
+        //     child: AnimationWidget(
+        //       animationType: "FADE",
+        //       child: SizedBox(
+        //         height: 210,
+        //         width: 303,
+        //         child: Stack(
+        //           fit: StackFit.loose,
+        //           alignment: Alignment.bottomRight,
+        //           children: [
+        //             GestureDetector(
+        //                 onTap: () {
+        //                   setState(() {
+        //                     controller.isClick.value =
+        //                         !controller.isClick.value;
+        //                   });
+        //                 },
+        //                 child: VideoPlayer(videoController!)),
+        //             if (controller.isClick.value)
+        //               const Icon(
+        //                 Icons.fullscreen,
+        //                 size: 35,
+        //                 color: Color(0xFF000000),
+        //               ).paddingOnly(bottom: 5, right: 5)
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        Padding(
+          padding: const EdgeInsets.only(left: 34, right: 41, top: 30),
+          child: ListView.builder(
+            itemCount: _controllers.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return TextFormField(
+                controller: _controllers[index],
+                cursorColor: AppColors.lightBlue,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  color: Color(0xFF5F8599),
+                  letterSpacing: 0.3,
+                ),
+                maxLines: widget.isExpandable ? null : 1,
+                minLines: widget.isExpandable ? 1 : 1,
+                textInputAction: TextInputAction.newline,
+                decoration: InputDecoration(
+                  hintText: hintTextList[index],
+                  hintStyle: const TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                    color: Color(0xFF91B4BC),
+                    letterSpacing: 0.3,
+                  ),
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.lightBlue,
+                      style: BorderStyle.solid,
+                      width: 1,
+                    ),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.lightBlue,
+                      style: BorderStyle.solid,
+                      width: 1,
+                    ),
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.lightBlue,
+                      style: BorderStyle.solid,
+                      width: 1,
+                    ),
+                  ),
+                  disabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.lightBlue,
+                      style: BorderStyle.solid,
+                      width: 1,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
         )
       ],
     );

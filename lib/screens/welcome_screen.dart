@@ -4,7 +4,7 @@ import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/screens/show_card_screen.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
-import 'package:pocket_of_peace/widgets/exit_dialog_widget.dart';
+import 'package:pocket_of_peace/widgets/common_build_widget.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

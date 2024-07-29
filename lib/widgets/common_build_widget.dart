@@ -48,7 +48,7 @@ dynamic showExitDialog(
               ),
               gradient: LinearGradient(colors: [
                 const Color(0xFFFBBE8B).withOpacity(0.3),
-                const Color(0xFFFFFFFF),
+                AppColors.primaryColor,
               ], begin: Alignment.topCenter, end: Alignment.center),
             ),
             child: Column(
@@ -147,7 +147,9 @@ dynamic showMessageSnackBar(String message, Color bgColor) {
       margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: bgColor,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
+      isDismissible: true,
+      animationDuration: const Duration(seconds: 1),
       borderRadius: 16,
       messageText: Center(
         child: Text(
