@@ -164,7 +164,7 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
               subTitle: card.subtitle,
               image: card.image,
               video: card.video,
-              hasImage: card.hasImages ?? false,
+              hasImage: card.hasImages,
               options: card.options,
               maxSelection: card.selectionMax,
               cardId: 'card_$index',
