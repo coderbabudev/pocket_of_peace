@@ -14,7 +14,6 @@ class TextCardWidget extends StatefulWidget {
     this.placeholderTexts,
     this.image,
     this.isExpandable = false,
-    // this.video,
   });
 
   final String cardId;
@@ -25,8 +24,6 @@ class TextCardWidget extends StatefulWidget {
   final String? image;
   final bool isExpandable;
 
-  // final String? video;
-
   @override
   State<TextCardWidget> createState() => _TextCardWidgetState();
 }
@@ -36,7 +33,6 @@ class _TextCardWidgetState extends State<TextCardWidget> {
   final List<String> hintTextList = [];
   final List<String> textValues = [];
 
-  // VideoPlayerController? videoController;
   CardGroupController controller = Get.put(CardGroupController());
 
   @override
@@ -49,15 +45,6 @@ class _TextCardWidgetState extends State<TextCardWidget> {
           hintTextList.add(widget.placeholderTexts![i]);
         }
       }
-      // if (widget.video != null) {
-      //   videoController =
-      //       VideoPlayerController.asset('assets/videos/${widget.video!}')
-      //         ..initialize().then((_) {
-      //           setState(() {});
-      //         });
-      //   videoController?.setLooping(true);
-      //   videoController?.play();
-      // }
     });
   }
 
@@ -84,7 +71,6 @@ class _TextCardWidgetState extends State<TextCardWidget> {
     for (var controller in _controllers) {
       controller.dispose();
     }
-    // videoController?.dispose();
     super.dispose();
   }
 
@@ -140,38 +126,6 @@ class _TextCardWidgetState extends State<TextCardWidget> {
               ),
             ),
           ),
-        // if (widget.video != null &&
-        //     videoController != null &&
-        //     videoController!.value.isInitialized)
-        //   Center(
-        //     child: AnimationWidget(
-        //       animationType: "FADE",
-        //       child: SizedBox(
-        //         height: 210,
-        //         width: 303,
-        //         child: Stack(
-        //           fit: StackFit.loose,
-        //           alignment: Alignment.bottomRight,
-        //           children: [
-        //             GestureDetector(
-        //                 onTap: () {
-        //                   setState(() {
-        //                     controller.isClick.value =
-        //                         !controller.isClick.value;
-        //                   });
-        //                 },
-        //                 child: VideoPlayer(videoController!)),
-        //             if (controller.isClick.value)
-        //               const Icon(
-        //                 Icons.fullscreen,
-        //                 size: 35,
-        //                 color: Color(0xFF000000),
-        //               ).paddingOnly(bottom: 5, right: 5)
-        //           ],
-        //         ),
-        //       ),
-        //     ),
-        //   ),
         Padding(
           padding: const EdgeInsets.only(left: 34, right: 41, top: 30),
           child: ListView.builder(

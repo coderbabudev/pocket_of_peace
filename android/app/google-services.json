@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "847652994345",
+    "project_id": "pocket-of-peace",
+    "storage_bucket": "pocket-of-peace.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:847652994345:android:499106094898bf2ec58b38",
+        "android_client_info": {
+          "package_name": "com.example.pocket_of_peace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLUVUZ2FGc4HcAiXN9ZZ2P8hc7YcBGDyU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

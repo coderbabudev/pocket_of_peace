@@ -41,6 +41,18 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
     controller.card.addAll(data(controller.cardTypeList));
   }
 
+  // void printCardDetails(
+  //     List<CardGroup> card, int cardGroupIndex, int cardListIndex) {
+  //   print('ID: ${card[cardGroupIndex].id}');
+  //   print('Skill Category: ${card[cardGroupIndex].skillCategory}');
+  //   print('Sub Skill Category: ${card[cardGroupIndex].subSkillCategory}');
+  //   print('Card Type: ${card[cardGroupIndex].cardList[cardListIndex].type}');
+  //   print('Card Title: ${card[cardGroupIndex].cardList[cardListIndex].title}');
+  //   print(
+  //       'Card Subtitle: ${card[cardGroupIndex].cardList[cardListIndex].subtitle}');
+  //   print('Card Index: ${card[cardGroupIndex].cardList[cardListIndex].index}');
+  // }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -98,7 +110,7 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
                         return controller.card[groupIndex];
                       },
                       scrollDirection: Axis.horizontal,
-                      onPageChanged: (index) {
+                      onPageChanged: (index) async {
                         controller.currentPage.value = index;
                         setState(() {
                           controller.progressValue.value =
@@ -141,7 +153,6 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
               title: card.title,
               subTitle: card.subtitle,
               image: card.image,
-              // video: card.video,
               numOfTextFields: card.numTextFields ?? 1,
               isExpandable: card.isExpandable!,
               placeholderTexts: card.placeholderTexts,
@@ -153,7 +164,7 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
               subTitle: card.subtitle,
               image: card.image,
               video: card.video,
-              hasImage: card.hasImages,
+              hasImage: card.hasImages ?? false,
               options: card.options,
               maxSelection: card.selectionMax,
               cardId: 'card_$index',

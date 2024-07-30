@@ -46,6 +46,7 @@ class _FinishScreenState extends State<FinishScreen> {
         const SizedBox(height: 40),
         GestureDetector(
           onTap: () async {
+            controller.finishQuiz();
             controller.currentMinValue.value = 0.0;
             controller.progressValue.value = 0.0;
             Get.offAll(() => const WelcomeScreen());

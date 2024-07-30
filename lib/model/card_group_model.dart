@@ -21,6 +21,13 @@ class CardGroup {
           .toList(),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'skill_category': skillCategory,
+        'sub_skill_category': subSkillCategory,
+        'card_list': cardList,
+      };
 }
 
 class CardItem {
@@ -29,7 +36,7 @@ class CardItem {
   final String? hint;
   final String? image;
   final String? video;
-  final String? subtitle;
+  final String subtitle;
   final int index;
   final int? selectionMax;
   final bool hasImages;
@@ -44,7 +51,7 @@ class CardItem {
     this.hint,
     this.image,
     this.video,
-    this.subtitle,
+    required this.subtitle,
     required this.index,
     this.selectionMax,
     this.hasImages = false,
@@ -80,13 +87,15 @@ class CardItem {
 }
 
 class CardOption {
+  final int? id;
   final String? text;
   final String? image;
 
-  CardOption({this.text, this.image});
+  CardOption({this.id, this.text, this.image});
 
   factory CardOption.fromJson(Map<String, dynamic> json) {
     return CardOption(
+      id: json['id'],
       text: json['text'],
       image: json['image'],
     );

@@ -165,7 +165,8 @@ class _StatementCardWidgetState extends State<StatementCardWidget> {
           if (widget.subTitle != null)
             Padding(
               padding: EdgeInsets.only(
-                top: (widget.image == null ||
+                top: (widget.title == null ||
+                        widget.image == null ||
                         widget.title == null ||
                         widget.video == null)
                     ? 0
