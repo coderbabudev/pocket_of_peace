@@ -1,28 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
+import 'package:pocket_of_peace/model/card_group_model.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/widgets/animation_widget.dart';
+
+import '../model/quiz_data_model.dart';
 
 class TextCardWidget extends StatefulWidget {
   const TextCardWidget({
     super.key,
     required this.cardId,
-    this.title,
-    this.subTitle,
-    this.numOfTextFields = 1,
-    this.placeholderTexts,
-    this.image,
-    this.isExpandable = false,
+    required this.pageIndex,
+    required this.cardItem,
   });
 
   final String cardId;
-  final String? title;
-  final String? subTitle;
-  final int numOfTextFields;
-  final List<String>? placeholderTexts;
-  final String? image;
-  final bool isExpandable;
+  final int pageIndex;
+  final CardItem cardItem;
 
   @override
   State<TextCardWidget> createState() => _TextCardWidgetState();
@@ -40,9 +35,9 @@ class _TextCardWidgetState extends State<TextCardWidget> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _initializeTextControllers();
-      if (widget.placeholderTexts != null) {
-        for (int i = 0; i < widget.placeholderTexts!.length; i++) {
-          hintTextList.add(widget.placeholderTexts![i]);
+      if (widget.cardItem.placeholderTexts != null) {
+        for (int i = 0; i < widget.cardItem.placeholderTexts!.length; i++) {
+          hintTextList.add(widget.cardItem.placeholderTexts![i]);
         }
       }
     });
@@ -50,7 +45,7 @@ class _TextCardWidgetState extends State<TextCardWidget> {
 
   void _initializeTextControllers() {
     setState(() {
-      for (int i = 0; i < widget.numOfTextFields; i++) {
+      for (int i = 0; i < widget.cardItem.numTextFields!; i++) {
         final textEditingController = TextEditingController(
           text: controller.getTextFieldStates(widget.cardId, i),
         );
@@ -79,11 +74,11 @@ class _TextCardWidgetState extends State<TextCardWidget> {
     return ListView(
       shrinkWrap: true,
       children: [
-        if (widget.title != null)
+        if (widget.cardItem.title.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(left: 34, right: 26),
             child: Text(
-              widget.title!,
+              widget.cardItem.title,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
@@ -92,11 +87,11 @@ class _TextCardWidgetState extends State<TextCardWidget> {
               ),
             ),
           ),
-        if (widget.subTitle != null)
+        if (widget.cardItem.subtitle.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 25, left: 34, right: 47),
             child: Text(
-              widget.subTitle ?? '',
+              widget.cardItem.subtitle,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -105,14 +100,14 @@ class _TextCardWidgetState extends State<TextCardWidget> {
               ),
             ),
           ),
-        if (widget.image != null)
+        if (widget.cardItem.image != null)
           Padding(
             padding: const EdgeInsets.only(top: 30),
             child: Center(
               child: AnimationWidget(
                 animationType: "FADE",
                 child: Image.asset(
-                  'assets/icons/${widget.image!}',
+                  'assets/icons/${widget.cardItem.image!}',
                   height: 102,
                   width: 108,
                   filterQuality: FilterQuality.high,
@@ -141,8 +136,18 @@ class _TextCardWidgetState extends State<TextCardWidget> {
                   color: Color(0xFF5F8599),
                   letterSpacing: 0.3,
                 ),
-                maxLines: widget.isExpandable ? null : 1,
-                minLines: widget.isExpandable ? 1 : 1,
+                onChanged: (value) {
+                  controller.quizDataList[widget.pageIndex] = CardDetail(
+                      id: widget.cardItem.idMain ?? 0,
+                      type: widget.cardItem.type,
+                      index: widget.cardItem.index,
+                      skillCategory: widget.cardItem.skillCategoryMain ?? '',
+                      subSkillCategory:
+                          widget.cardItem.subSkillCategoryMain ?? '',
+                      textValue: [_controllers[index].text]);
+                },
+                maxLines: widget.cardItem.isExpandable ?? false ? null : 1,
+                minLines: widget.cardItem.isExpandable ?? false ? 1 : 1,
                 textInputAction: TextInputAction.newline,
                 decoration: InputDecoration(
                   hintText: hintTextList[index],

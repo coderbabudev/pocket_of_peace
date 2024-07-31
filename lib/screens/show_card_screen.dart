@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/model/card_group_model.dart';
+import 'package:pocket_of_peace/model/quiz_data_model.dart';
 import 'package:pocket_of_peace/screens/finish_screen.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
@@ -31,27 +32,24 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
   @override
   void initState() {
     super.initState();
-    int n = widget.minuteValue.toInt();
-    controller.initializeMandatoryCategories(n);
-    controller.cardTypeList = controller.selectedCardGroups
-        .expand((group) => group.cardList)
-        .toList();
+    controller.initializeMandatoryCategories(widget.minuteValue.toInt());
+    controller.cardTypeList = controller.selectedCardGroups.expand((group) {
+      for (var element in group.cardList) {
+        element.idMain = group.id;
+        element.skillCategoryMain = group.skillCategory;
+        element.subSkillCategoryMain = group.subSkillCategory;
+      }
+      return group.cardList;
+    }).toList();
     controller.card = [];
+    controller.quizDataList = [];
     controller.cardTypeList.shuffle(Random());
     controller.card.addAll(data(controller.cardTypeList));
+    controller.quizDataList = List.generate(
+      controller.card.length - 1,
+      (index) => CardDetail(),
+    );
   }
-
-  // void printCardDetails(
-  //     List<CardGroup> card, int cardGroupIndex, int cardListIndex) {
-  //   print('ID: ${card[cardGroupIndex].id}');
-  //   print('Skill Category: ${card[cardGroupIndex].skillCategory}');
-  //   print('Sub Skill Category: ${card[cardGroupIndex].subSkillCategory}');
-  //   print('Card Type: ${card[cardGroupIndex].cardList[cardListIndex].type}');
-  //   print('Card Title: ${card[cardGroupIndex].cardList[cardListIndex].title}');
-  //   print(
-  //       'Card Subtitle: ${card[cardGroupIndex].cardList[cardListIndex].subtitle}');
-  //   print('Card Index: ${card[cardGroupIndex].cardList[cardListIndex].index}');
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +103,10 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
                       physics: controller.currentPage.value ==
                               controller.card.length - 1
                           ? const NeverScrollableScrollPhysics()
-                          : const ScrollPhysics(),
+                          : controller.manageSwipe().value == null ||
+                                  controller.manageSwipe().value == true
+                              ? const ScrollPhysics()
+                              : NeverScrollableScrollPhysics(),
                       itemBuilder: (context, groupIndex) {
                         return controller.card[groupIndex];
                       },
@@ -116,6 +117,11 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
                           controller.progressValue.value =
                               (index + 1) / controller.card.length;
                         });
+                        CardItem currentCard = controller.cardTypeList[index];
+                        if (currentCard.type == 'MultipleChoiceCard') {
+                          print(
+                              'selected :- ${controller.multiChoiceCardStates}');
+                        }
                       },
                     ),
                   )
@@ -134,39 +140,23 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
         CardItem card = controller.cardTypeList[index];
         switch (card.type) {
           case 'StatementCard':
-            return StatementCardWidget(
-              image: card.image ?? '',
-              title: card.title,
-              subTitle: card.subtitle,
-              video: card.video,
-            );
+            return StatementCardWidget(cardItem: card, pageIndex: index);
           case 'YesNoCard':
             return YesOrNoCardWidget(
-              title: card.title,
-              subTitle: card.subtitle,
-              image: card.image,
-              video: card.video,
-              id: 'card_$index',
+              pageIndex: index,
+              cardId: 'card_$index',
+              cardItem: card,
             );
           case 'TextCard':
             return TextCardWidget(
-              title: card.title,
-              subTitle: card.subtitle,
-              image: card.image,
-              numOfTextFields: card.numTextFields ?? 1,
-              isExpandable: card.isExpandable!,
-              placeholderTexts: card.placeholderTexts,
+              pageIndex: index,
+              cardItem: card,
               cardId: 'card_$index',
             );
           case 'MultipleChoiceCard':
             return MultipleChoiceCardWidget(
-              title: card.title,
-              subTitle: card.subtitle,
-              image: card.image,
-              video: card.video,
-              hasImage: card.hasImages,
-              options: card.options,
-              maxSelection: card.selectionMax,
+              cardItem: card,
+              pageIndex: index,
               cardId: 'card_$index',
             );
           default:

@@ -1,12 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' as root_bundle;
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:pocket_of_peace/model/card_group_model.dart';
 import 'package:pocket_of_peace/model/quiz_data_model.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
@@ -16,16 +14,16 @@ class CardGroupController extends GetxController {
   RxDouble currentMinValue = 0.0.obs;
   RxInt currentPage = 0.obs;
   RxBool isClick = false.obs;
-  RxBool isLoading = false.obs;
+  RxBool isSelected = false.obs;
   List<Widget> card = [];
   List<CardItem> cardTypeList = [];
   List<CardGroup> cardList = [];
   List<CardGroup> selectedCardGroups = [];
+  List<CardDetail> quizDataList = [];
   var yNButtonStates = <String, YesNOButtonStates>{}.obs;
   var multiChoiceCardStates = <String, List<int>>{}.obs;
   var textFieldStates = <String, List<String>>{}.obs;
   PageController pageController = PageController();
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<void> loadJsonData() async {
     String data = await root_bundle.rootBundle.loadString(Assets.catalogueJson);
@@ -35,10 +33,14 @@ class CardGroupController extends GetxController {
     update();
   }
 
-  Rx<CardItem?> selectedCard = Rx<CardItem?>(null);
-
-  void selectCard(CardItem card) {
-    selectedCard.value = card;
+  RxnBool manageSwipe() {
+    CardItem currentCard = cardTypeList[currentPage.value];
+    if (currentCard.type == 'MultipleChoiceCard') {
+      return RxnBool(
+          (multiChoiceCardStates["card_${currentPage.value}"]?.isNotEmpty ??
+              false));
+    }
+    return RxnBool();
   }
 
   void initializeMandatoryCategories(int n) {
@@ -74,10 +76,7 @@ class CardGroupController extends GetxController {
       isYesSelected: isYesSelected,
       isNoSelected: isNoSelected,
     );
-  }
-
-  getYNButtonState(String id) {
-    return yNButtonStates[id] ?? YesNOButtonStates(id: id);
+    update();
   }
 
   void updateMultiChoiceCardState(
@@ -93,10 +92,6 @@ class CardGroupController extends GetxController {
     }
   }
 
-  List<int> getMultiChoiceCardState(String cardId) {
-    return multiChoiceCardStates[cardId] ?? [];
-  }
-
   void updateTextFieldStates(String cardId, int index, String value) {
     if (!textFieldStates.containsKey(cardId)) {
       textFieldStates[cardId] = [];
@@ -109,6 +104,14 @@ class CardGroupController extends GetxController {
     update();
   }
 
+  getYNButtonState(String id) {
+    return yNButtonStates[id] ?? YesNOButtonStates(id: id);
+  }
+
+  List<int> getMultiChoiceCardState(String cardId) {
+    return multiChoiceCardStates[cardId] ?? [];
+  }
+
   String getTextFieldStates(String cardId, int index) {
     return textFieldStates[cardId]?[index] ?? '';
   }
@@ -119,39 +122,33 @@ class CardGroupController extends GetxController {
     textFieldStates.clear();
   }
 
-  void finishQuiz() async {
-    List<CardDetail> cardDetails = selectedCardGroups.map((group) {
-      return CardDetail(
-        id: group.id ?? 0,
-        skillCategory: group.skillCategory ?? '',
-        subSkillCategory: group.subSkillCategory ?? '',
-        cardList: group.cardList.map((card) {
-          return CardItemDetail(
-            type: card.type,
-            title: card.title,
-            subtitle: card.subtitle,
-            index: card.index,
-            placeholderTexts: card.placeholderTexts?.map((e) => e).toList(),
-          );
-        }).toList(),
-      );
-    }).toList();
-
-    await saveQuizData(cardDetails);
+  /*bool isMultipleChoiceCardCompleted(String cardId) {
+    return multiChoiceCardStates[cardId]?.isNotEmpty ?? false;
   }
 
-  Future<void> saveQuizData(List<CardDetail> cardDetails) async {
-    try {
-      String formattedDate =
-          DateFormat('yyyy MMMM dd, hh:mm a').format(DateTime.now());
-      final collection = firestore.collection('quiz_data');
-      final document = collection.doc(); // Creates a new document reference
-      await document.set({
-        'card_details': cardDetails.map((detail) => detail.toJson()).toList(),
-        'createdAt': formattedDate,
-      });
-    } catch (e) {
-      throw e.toString();
+  bool isTextCardCompleted(String cardId, int textFieldCount) {
+    if (textFieldStates[cardId] == null) return false;
+    for (int i = 0; i < textFieldCount; i++) {
+      if (textFieldStates[cardId]![i].isEmpty) return false;
     }
+    return true;
   }
+
+  bool isYesNoCardCompleted(String cardId) {
+    var state = yNButtonStates[cardId];
+    return state?.isYesSelected == true || state?.isNoSelected == true;
+  }
+
+  bool isCardCompleted(CardItem card,String cardID) {
+    switch (card.type) {
+      case 'MultipleChoiceCard':
+        return isMultipleChoiceCardCompleted(cardID);
+      case 'TextCard':
+        return isTextCardCompleted(cardID, card.numTextFields!);
+      case 'YesNoCard':
+        return isYesNoCardCompleted(cardID);
+      default:
+        return true; // If card type doesn't require action
+    }
+  }*/
 }

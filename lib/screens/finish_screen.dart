@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/screens/welcome_screen.dart';
+import 'package:pocket_of_peace/services/firebase_services.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
 
@@ -45,12 +46,13 @@ class _FinishScreenState extends State<FinishScreen> {
         ).paddingOnly(left: 51, right: 33),
         const SizedBox(height: 40),
         GestureDetector(
-          onTap: () async {
-            controller.finishQuiz();
-            controller.currentMinValue.value = 0.0;
-            controller.progressValue.value = 0.0;
-            Get.offAll(() => const WelcomeScreen());
-            setState(() {});
+          onTap: () {
+            setState(() {
+              FirebaseServices().saveQuizData(controller.quizDataList);
+              controller.currentMinValue.value = 0.0;
+              controller.progressValue.value = 0.0;
+              Get.offAll(() => const WelcomeScreen());
+            });
           },
           child: Stack(
             alignment: Alignment.center,

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:pocket_of_peace/controller/card_group_controller.dart';
 import 'package:pocket_of_peace/model/card_group_model.dart';
+import 'package:pocket_of_peace/model/quiz_data_model.dart';
 import 'package:pocket_of_peace/screens/video_palyer_fullScreen.dart';
 import 'package:pocket_of_peace/utils/color_utils.dart';
 import 'package:pocket_of_peace/utils/string_utils.dart';
@@ -10,20 +11,15 @@ import 'package:pocket_of_peace/widgets/animation_widget.dart';
 import 'package:video_player/video_player.dart';
 
 class YesOrNoCardWidget extends StatefulWidget {
-  const YesOrNoCardWidget({
-    super.key,
-    this.title,
-    this.subTitle,
-    this.image,
-    this.video,
-    required this.id,
-  });
+  const YesOrNoCardWidget(
+      {super.key,
+      required this.pageIndex,
+      required this.cardId,
+      required this.cardItem});
 
-  final String id;
-  final String? title;
-  final String? subTitle;
-  final String? image;
-  final String? video;
+  final String cardId;
+  final int pageIndex;
+  final CardItem cardItem;
 
   @override
   State<YesOrNoCardWidget> createState() => _YesOrNoCardWidgetState();
@@ -37,14 +33,14 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (widget.video != null) {
-        videoController =
-            VideoPlayerController.asset('assets/videos/${widget.video!}')
-              ..initialize().then((_) {
-                setState(() {});
-                videoController?.setLooping(true);
-                videoController?.play();
-              });
+      if (widget.cardItem.video != null) {
+        videoController = VideoPlayerController.asset(
+            'assets/videos/${widget.cardItem.video!}')
+          ..initialize().then((_) {
+            setState(() {});
+            videoController?.setLooping(true);
+            videoController?.play();
+          });
       }
     });
   }
@@ -68,16 +64,16 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    YesNOButtonStates cardState = controller.getYNButtonState(widget.id);
+    YesNOButtonStates cardState = controller.getYNButtonState(widget.cardId);
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.title != null)
+          if (widget.cardItem.title.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(left: 30, right: 34),
               child: Text(
-                widget.title ?? '',
+                widget.cardItem.title,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
@@ -86,14 +82,14 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                 ),
               ),
             ),
-          if (widget.image != null)
+          if (widget.cardItem.image != null)
             Padding(
               padding: const EdgeInsets.only(top: 29),
               child: Center(
                 child: AnimationWidget(
                   animationType: "FADE",
                   child: Image.asset(
-                    'assets/icons/${widget.image!}',
+                    'assets/icons/${widget.cardItem.image!}',
                     height: 85,
                     width: 76,
                     filterQuality: FilterQuality.high,
@@ -107,7 +103,7 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                 ),
               ),
             ),
-          if (widget.video != null &&
+          if (widget.cardItem.video != null &&
               videoController != null &&
               videoController!.value.isInitialized)
             Padding(
@@ -145,11 +141,11 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                 ),
               ),
             ),
-          if (widget.subTitle != null)
+          if (widget.cardItem.subtitle.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 60, left: 30, right: 34),
               child: Text(
-                widget.subTitle ?? '',
+                widget.cardItem.subtitle,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
@@ -165,7 +161,18 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
-                        controller.updateYNButtonState(widget.id, true, false);
+                        controller.updateYNButtonState(
+                            widget.cardId, true, false);
+                        controller.quizDataList[widget.pageIndex] = CardDetail(
+                          id: widget.cardItem.idMain ?? 0,
+                          type: widget.cardItem.type,
+                          index: widget.cardItem.index,
+                          skillCategory:
+                              widget.cardItem.skillCategoryMain ?? '',
+                          subSkillCategory:
+                              widget.cardItem.subSkillCategoryMain ?? '',
+                          yesNoAnswer: 'Yes',
+                        );
                         controller.pageController.nextPage(
                           duration: const Duration(milliseconds: 700),
                           curve: Curves.easeIn,
@@ -236,7 +243,18 @@ class _YesOrNoCardWidgetState extends State<YesOrNoCardWidget> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
-                        controller.updateYNButtonState(widget.id, false, true);
+                        controller.updateYNButtonState(
+                            widget.cardId, false, true);
+                        controller.quizDataList[widget.pageIndex] = CardDetail(
+                          id: widget.cardItem.idMain ?? 0,
+                          type: widget.cardItem.type,
+                          index: widget.cardItem.index,
+                          skillCategory:
+                              widget.cardItem.skillCategoryMain ?? '',
+                          subSkillCategory:
+                              widget.cardItem.subSkillCategoryMain ?? '',
+                          yesNoAnswer: 'No',
+                        );
                         controller.pageController.nextPage(
                           duration: const Duration(milliseconds: 700),
                           curve: Curves.easeIn,

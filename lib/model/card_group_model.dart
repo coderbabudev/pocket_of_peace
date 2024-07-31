@@ -31,6 +31,7 @@ class CardGroup {
 }
 
 class CardItem {
+  final String? cardId;
   final String type;
   final String title;
   final String? hint;
@@ -45,7 +46,14 @@ class CardItem {
   final bool? isExpandable;
   final List<String>? placeholderTexts;
 
+  int? idMain;
+  String? skillCategoryMain;
+  String? subSkillCategoryMain;
+  String? cardOptionText;
+
   CardItem({
+    this.cardOptionText,
+    this.cardId,
     required this.type,
     required this.title,
     this.hint,
@@ -59,10 +67,14 @@ class CardItem {
     this.numTextFields,
     this.isExpandable,
     this.placeholderTexts,
+    this.idMain,
+    this.skillCategoryMain,
+    this.subSkillCategoryMain,
   });
 
   factory CardItem.fromJson(Map<String, dynamic> json) {
     return CardItem(
+      cardId: json['card_id'],
       type: json['type'],
       title: json['title'] ?? '',
       hint: json['hint'] ?? '',
@@ -87,15 +99,13 @@ class CardItem {
 }
 
 class CardOption {
-  final int? id;
   final String? text;
   final String? image;
 
-  CardOption({this.id, this.text, this.image});
+  CardOption({this.text, this.image});
 
   factory CardOption.fromJson(Map<String, dynamic> json) {
     return CardOption(
-      id: json['id'],
       text: json['text'],
       image: json['image'],
     );
