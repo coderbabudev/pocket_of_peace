@@ -106,7 +106,7 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
                           : controller.manageSwipe().value == null ||
                                   controller.manageSwipe().value == true
                               ? const ScrollPhysics()
-                              : NeverScrollableScrollPhysics(),
+                              : const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, groupIndex) {
                         return controller.card[groupIndex];
                       },
@@ -117,11 +117,6 @@ class _ShowCardScreenState extends State<ShowCardScreen> {
                           controller.progressValue.value =
                               (index + 1) / controller.card.length;
                         });
-                        CardItem currentCard = controller.cardTypeList[index];
-                        if (currentCard.type == 'MultipleChoiceCard') {
-                          print(
-                              'selected :- ${controller.multiChoiceCardStates}');
-                        }
                       },
                     ),
                   )

@@ -39,6 +39,14 @@ class CardGroupController extends GetxController {
       return RxnBool(
           (multiChoiceCardStates["card_${currentPage.value}"]?.isNotEmpty ??
               false));
+    } else if (currentCard.type == 'TextCard') {
+      return RxnBool(
+          (textFieldStates["card_${currentPage.value}"]?.isNotEmpty ?? false));
+    } else if (currentCard.type == 'YesNoCard') {
+      return RxnBool((yNButtonStates["card_${currentPage.value}"]
+                  ?.isYesSelected ??
+              false) ||
+          (yNButtonStates["card_${currentPage.value}"]?.isNoSelected ?? false));
     }
     return RxnBool();
   }
@@ -122,7 +130,7 @@ class CardGroupController extends GetxController {
     textFieldStates.clear();
   }
 
-  /*bool isMultipleChoiceCardCompleted(String cardId) {
+/*bool isMultipleChoiceCardCompleted(String cardId) {
     return multiChoiceCardStates[cardId]?.isNotEmpty ?? false;
   }
 
